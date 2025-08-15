@@ -1,4 +1,4 @@
 export enum SiteStatus {
-    OK,
-    WRONG_PASSWORD
+  OK,
+  WRONG_PASSWORD,
 }

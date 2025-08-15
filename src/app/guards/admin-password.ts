@@ -12,5 +12,7 @@ export const adminPasswordGuard: CanActivateFn = () => {
   }
 
   alert('Wrong password! This incident will be reported.');
-  return router.createUrlTree(['/'], {queryParams: {siteStatus: SiteStatus.WRONG_PASSWORD}});
+  return router.createUrlTree(['/'], {
+    queryParams: { siteStatus: SiteStatus.WRONG_PASSWORD },
+  });
 };

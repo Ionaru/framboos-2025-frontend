@@ -26,7 +26,7 @@ import { SiteStatus } from '../errors';
       >
         <div class="rounded p-8">
           <h1 class="text-4xl font-bold h-50">
-          🍇 Byte Brawl 
+            🍇 Byte Brawl
             <om-neon-underline />
           </h1>
           <div class="flex flex-col items-center justify-center gap-4 mt-8">
@@ -36,7 +36,10 @@ import { SiteStatus } from '../errors';
             >
               Join the Byte Brawl
             </button>
-            <p class="dark:text-white/50 text-black/50 cursor-pointer" routerLink="/admin">
+            <p
+              class="dark:text-white/50 text-black/50 cursor-pointer"
+              routerLink="/admin"
+            >
               Admin Panel
             </p>
           </div>

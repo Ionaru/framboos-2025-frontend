@@ -1,5 +1,5 @@
 import { httpResource } from '@angular/common/http';
-import { getRandomItemFromArray } from "@ionaru/array-utils";
+import { getRandomItemFromArray } from '@ionaru/array-utils';
 import { computed, inject, Injectable, resource, signal } from '@angular/core';
 import { of, timer } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -14,8 +14,7 @@ export interface NodeLocation {
   providedIn: 'root',
 })
 export class PlayerLocationsService {
-
-readonly #graphService = inject(GraphService);
+  readonly #graphService = inject(GraphService);
 
   readonly trigger = toSignal(timer(0, 3000));
 
@@ -26,9 +25,12 @@ readonly #graphService = inject(GraphService);
       graph: this.#graphService.graph.value(),
       trigger: this.trigger(),
     }),
-    loader: ({params}) => {
+    loader: ({ params }) => {
       console.log('Loading locations');
-      const locations = params.graph?.nodes.map<NodeLocation>((node) => ({ id: node.id, players: [] }));
+      const locations = params.graph?.nodes.map<NodeLocation>((node) => ({
+        id: node.id,
+        players: [],
+      }));
       if (!locations) {
         return Promise.resolve([]);
       }

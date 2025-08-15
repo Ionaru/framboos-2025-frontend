@@ -18,7 +18,7 @@ import { GridComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
 import { GraphService } from '../services/graph';
 import { PlayerLocationsService } from '../services/player-locations';
-import { LeaderboardComponent } from "../components/leaderboard";
+import { LeaderboardComponent } from '../components/leaderboard';
 echarts.use([GraphChart, GridComponent, CanvasRenderer]);
 
 const LINE_MIN_WIDTH = 3;
@@ -37,11 +37,22 @@ type Unpacked<T> = T extends (infer U)[] ? U : T;
           (chartInit)="chartInit($event)"
           (chartFinished)="chartFinished()"
           [options]="option"
-          [merge]="{ series: [{ data: nodes(), layout: nodePositions().size > 0 ? 'none' : 'force' }] }"
+          [merge]="{
+            series: [
+              {
+                data: nodes(),
+                layout: nodePositions().size > 0 ? 'none' : 'force',
+              },
+            ],
+          }"
           class="demo-chart"
         ></div>
       }
-      <app-leaderboard class="absolute top-1/2 right-0 z-10 m-4 -translate-y-1/2" [locations]="playerLocationsService.locations.value()" [nodes]="nodes()" />
+      <app-leaderboard
+        class="absolute top-1/2 right-0 z-10 m-4 -translate-y-1/2"
+        [locations]="playerLocationsService.locations.value()"
+        [nodes]="nodes()"
+      />
     </app-page>
   `,
   providers: [
@@ -83,10 +94,10 @@ export class PlayPage {
     const locations = this.playerLocationsService.locations.value();
     return graph.nodes.map<Unpacked<GraphSeriesOption['data']>>((node) => {
       const location = locations?.find((location) => location.id === node.id);
-      return ({
+      return {
         label: {
           show: true,
-          formatter: '{b}'
+          formatter: '{b}',
         },
         name: location?.players.join(''),
         // { color , borderColor , borderWidth , borderType , borderDashOffset , borderCap , borderJoin , borderMiterLimit , shadowBlur , shadowColor , shadowOffsetX , shadowOffsetY , opacity }
@@ -100,7 +111,7 @@ export class PlayPage {
         value: node.name,
         x: nodePositions.get(node.id)?.[0],
         y: nodePositions.get(node.id)?.[1],
-      });
+      };
     });
   });
 
@@ -110,7 +121,9 @@ export class PlayPage {
       return [];
     }
     const maxLatency = Math.max(...graph.edges.map((edge) => edge.latency));
-    const links = graph.edges.map<Unpacked<Exclude<GraphSeriesOption['links'], undefined>>>((edge) => ({
+    const links = graph.edges.map<
+      Unpacked<Exclude<GraphSeriesOption['links'], undefined>>
+    >((edge) => ({
       source: edge.from,
       target: edge.to,
       lineStyle: {
@@ -199,13 +212,13 @@ export class PlayPage {
     }
     const chart = this.chartInstance();
     if (!chart) {
-    throw new Error('Chart not found');
+      throw new Error('Chart not found');
     }
     // @ts-expect-error - Private method
     const model = chart.getModel();
     const series = model.getSeriesByIndex(0);
     const nodeData = series.getData();
-    
+
     const nodes = this.graphService.graph.value()?.nodes;
 
     const positions = new Map<string, any>();
