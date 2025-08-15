@@ -26,6 +26,7 @@
     "@angular/forms": "^20.1.0",
     "@angular/platform-browser": "^20.1.0",
     "@angular/router": "^20.1.0",
+    "@ionaru/array-utils": "npm:@jsr/ionaru__array-utils@^11.1.0",
     "@omnedia/ngx-border-beam": "^3.0.1",
     "@omnedia/ngx-dotpattern": "^3.0.0",
     "@omnedia/ngx-flickering-grid": "^3.0.0",

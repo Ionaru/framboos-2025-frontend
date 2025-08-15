@@ -25,7 +25,7 @@ import { SiteStatus } from '../errors';
         [gradientColorEnd]="'#6366f1'"
       >
         <div class="rounded p-8">
-          <h1 class="text-4xl font-bold">
+          <h1 class="text-4xl font-bold h-50">
           🍇 Byte Brawl 
             <om-neon-underline />
           </h1>
@@ -36,7 +36,7 @@ import { SiteStatus } from '../errors';
             >
               Join the Byte Brawl
             </button>
-            <p class="text-white/50 cursor-pointer" routerLink="/admin">
+            <p class="dark:text-white/50 text-black/50 cursor-pointer" routerLink="/admin">
               Admin Panel
             </p>
           </div>

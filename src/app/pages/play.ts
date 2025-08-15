@@ -17,6 +17,7 @@ import { GraphChart } from 'echarts/charts';
 import { GridComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
 import { GraphService } from '../services/graph';
+import { PlayerLocationsService } from '../services/player-locations';
 echarts.use([GraphChart, GridComponent, CanvasRenderer]);
 
 const LINE_MIN_WIDTH = 3;
@@ -28,21 +29,6 @@ type Unpacked<T> = T extends (infer U)[] ? U : T;
   imports: [Page, NgxEchartsDirective],
   template: `
     <app-page class="flex flex-col items-center justify-center">
-      <input
-        class="absolute top-0 left-0 z-10"
-        #range
-        type="range"
-        min="1"
-        max="400"
-        [value]="size()"
-        (input)="setSize(range.value)"
-      />
-      <button class="absolute top-0 right-0 z-10" (click)="randomPosition()">
-        RandomPos
-      </button>
-      <button class="absolute bottom-0 right-0 z-10" (click)="printOptions()">
-        PrintOptions
-      </button>
       @if (chartOption(); as option) {
         <div
           style="width: 100vw; height: 100vw;"
@@ -63,7 +49,7 @@ type Unpacked<T> = T extends (infer U)[] ? U : T;
   ],
 })
 export class PlayPage {
-  readonly size = signal(300);
+  readonly size = signal(75);
 
   readonly chart = viewChild<NgxEchartsDirective>('chart');
 
@@ -92,19 +78,27 @@ export class PlayPage {
     }
     const position = this.position();
     const nodePositions = this.nodePositions();
-    return graph.nodes.map<Unpacked<GraphSeriesOption['data']>>((node) => ({
-      label: {
-        show: true,
-        formatter: '{b}'
-      },
-      name: position === node.id ? '🐄😼🚛' : '',
-      itemStyle: {
-        color: position === node.id ? 'rgba(255, 0, 0, 0.5)' : undefined,
-      },
-      id: node.id,
-      x: nodePositions.get(node.id)?.[0],
-      y: nodePositions.get(node.id)?.[1],
-    }));
+    const locations = this.playerLocationsService.locations.value();
+    return graph.nodes.map<Unpacked<GraphSeriesOption['data']>>((node) => {
+      const location = locations?.find((location) => location.id === node.id);
+      return ({
+        label: {
+          show: true,
+          formatter: '{b}'
+        },
+        name: location?.players.join(''),
+        // { color , borderColor , borderWidth , borderType , borderDashOffset , borderCap , borderJoin , borderMiterLimit , shadowBlur , shadowColor , shadowOffsetX , shadowOffsetY , opacity }
+        itemStyle: {
+          // color: location?.players.length && location.players.length > 0 ? 'rgba(255, 0, 0, 0.5)' : 'transparent',
+          color: '#121212',
+          borderColor: '#69a4e5',
+          borderWidth: 1,
+        },
+        id: node.id,
+        x: nodePositions.get(node.id)?.[0],
+        y: nodePositions.get(node.id)?.[1],
+      });
+    });
   });
 
   readonly edges = computed(() => {
@@ -117,6 +111,8 @@ export class PlayPage {
       source: edge.from,
       target: edge.to,
       lineStyle: {
+        color: '#69a4e5',
+        opacity: 1,
         width: Math.max(
           LINE_MIN_WIDTH,
           Math.min(
@@ -124,6 +120,7 @@ export class PlayPage {
             (edge.latency / maxLatency) * LINE_MAX_WIDTH,
           ),
         ),
+        curveness: 0.1,
       },
     }));
     return links;
@@ -140,6 +137,7 @@ export class PlayPage {
   }
 
   readonly graphService = inject(GraphService);
+  readonly playerLocationsService = inject(PlayerLocationsService);
   readonly chartOption = signal<EChartsOption | undefined>(undefined);
 
   constructor() {

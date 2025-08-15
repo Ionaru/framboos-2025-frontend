@@ -23,5 +23,5 @@ export class GraphService {
       `http://localhost:8080/raspberry-byte-brawl/game/network?size=${this.size()}`,
   );
 
-  readonly graph = httpResource<Graph>(this.#url);
+  readonly graph = httpResource<Graph>(this.#url).asReadonly();
 }
