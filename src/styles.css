@@ -1,2 +1,26 @@
 /* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
+
+@theme {
+    --color-primary: #0ea5e9;
+    --color-accent: #4338CA;
+    --color-highlight: #22C55E;
+    --color-base: #0F172A;
+  }
+
+html {
+  color-scheme: dark;
+}
+
+h1 {
+    font-size: 6rem;
+    font-weight: bold;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    background-image: linear-gradient(
+      to bottom,
+      #fff 0,
+      rgba(53, 53, 53) 95%
+    );
+  }
