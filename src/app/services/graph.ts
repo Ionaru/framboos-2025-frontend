@@ -1,7 +1,7 @@
 import { httpResource } from '@angular/common/http';
 import { computed, Injectable, signal } from '@angular/core';
 
-interface Graph {
+export interface Graph {
   nodes: {
     id: string;
     name: string;

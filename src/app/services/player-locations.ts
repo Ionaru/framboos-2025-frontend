@@ -5,7 +5,7 @@ import { of, timer } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { GraphService } from './graph';
 
-interface Location {
+export interface NodeLocation {
   id: string;
   players: string[];
 }
@@ -28,7 +28,7 @@ readonly #graphService = inject(GraphService);
     }),
     loader: ({params}) => {
       console.log('Loading locations');
-      const locations = params.graph?.nodes.map<Location>((node) => ({ id: node.id, players: [] }));
+      const locations = params.graph?.nodes.map<NodeLocation>((node) => ({ id: node.id, players: [] }));
       if (!locations) {
         return Promise.resolve([]);
       }

@@ -18,6 +18,7 @@ import { GridComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
 import { GraphService } from '../services/graph';
 import { PlayerLocationsService } from '../services/player-locations';
+import { LeaderboardComponent } from "../components/leaderboard";
 echarts.use([GraphChart, GridComponent, CanvasRenderer]);
 
 const LINE_MIN_WIDTH = 3;
@@ -26,7 +27,7 @@ const LINE_MAX_WIDTH = 10;
 type Unpacked<T> = T extends (infer U)[] ? U : T;
 
 @Component({
-  imports: [Page, NgxEchartsDirective],
+  imports: [Page, NgxEchartsDirective, LeaderboardComponent],
   template: `
     <app-page class="flex flex-col items-center justify-center">
       @if (chartOption(); as option) {
@@ -40,6 +41,7 @@ type Unpacked<T> = T extends (infer U)[] ? U : T;
           class="demo-chart"
         ></div>
       }
+      <app-leaderboard class="absolute top-1/2 right-0 z-10 m-4 -translate-y-1/2" [locations]="playerLocationsService.locations.value()" [nodes]="nodes()" />
     </app-page>
   `,
   providers: [
@@ -95,6 +97,7 @@ export class PlayPage {
           borderWidth: 1,
         },
         id: node.id,
+        value: node.name,
         x: nodePositions.get(node.id)?.[0],
         y: nodePositions.get(node.id)?.[1],
       });
@@ -107,7 +110,7 @@ export class PlayPage {
       return [];
     }
     const maxLatency = Math.max(...graph.edges.map((edge) => edge.latency));
-    const links = graph.edges.map((edge) => ({
+    const links = graph.edges.map<Unpacked<Exclude<GraphSeriesOption['links'], undefined>>>((edge) => ({
       source: edge.from,
       target: edge.to,
       lineStyle: {
