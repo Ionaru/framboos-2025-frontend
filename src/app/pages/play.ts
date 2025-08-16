@@ -1,11 +1,4 @@
-import {
-  Component,
-  computed,
-  effect,
-  inject,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { Page } from '../components/page';
 
 import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
@@ -64,24 +57,6 @@ type Unpacked<T> = T extends (infer U)[] ? U : T;
 export class PlayPage {
   readonly size = signal(75);
 
-  readonly chart = viewChild<NgxEchartsDirective>('chart');
-
-  setSize(input: string) {
-    this.size.set(Number(input));
-  }
-
-  printOptions() {
-    const chart = this.chartInstance();
-    if (!chart) {
-      return;
-    }
-    // @ts-expect-error
-    const options = chart.getModel();
-    const data = options.getSeriesByType('graph')[0].getData();
-    const node = this.graphService.graph.value()?.nodes[0];
-  }
-
-  readonly position = signal<string>('');
   readonly nodePositions = signal<Map<string, [number, number]>>(new Map());
 
   readonly nodes = computed(() => {
@@ -89,7 +64,6 @@ export class PlayPage {
     if (!graph) {
       return [];
     }
-    const position = this.position();
     const nodePositions = this.nodePositions();
     const locations = this.playerLocationsService.locations.value();
     return graph.nodes.map<Unpacked<GraphSeriesOption['data']>>((node) => {
@@ -100,9 +74,7 @@ export class PlayPage {
           formatter: '{b}',
         },
         name: location?.players.join(''),
-        // { color , borderColor , borderWidth , borderType , borderDashOffset , borderCap , borderJoin , borderMiterLimit , shadowBlur , shadowColor , shadowOffsetX , shadowOffsetY , opacity }
         itemStyle: {
-          // color: location?.players.length && location.players.length > 0 ? 'rgba(255, 0, 0, 0.5)' : 'transparent',
           color: '#121212',
           borderColor: '#69a4e5',
           borderWidth: 1,
@@ -141,16 +113,6 @@ export class PlayPage {
     }));
     return links;
   });
-
-  randomPosition() {
-    const graph = this.graphService.graph.value();
-    if (!graph) {
-      return;
-    }
-    this.position.set(
-      graph.nodes[Math.floor(Math.random() * graph.nodes.length)].id,
-    );
-  }
 
   readonly graphService = inject(GraphService);
   readonly playerLocationsService = inject(PlayerLocationsService);

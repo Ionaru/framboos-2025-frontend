@@ -1,7 +1,6 @@
-import { httpResource } from '@angular/common/http';
 import { getRandomItemFromArray } from '@ionaru/array-utils';
-import { computed, inject, Injectable, resource, signal } from '@angular/core';
-import { of, timer } from 'rxjs';
+import { inject, Injectable, resource } from '@angular/core';
+import { timer } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { GraphService } from './graph';
 
