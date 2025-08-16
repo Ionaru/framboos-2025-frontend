@@ -68,6 +68,8 @@ export class PlayPage {
     const locations = this.playerLocationsService.locations.value();
     return graph.nodes.map<Unpacked<GraphSeriesOption['data']>>((node) => {
       const location = locations?.find((location) => location.id === node.id);
+      const hasPlayer = location?.players.length && location.players.length > 0;
+      const hasData = Math.random() > 0.99;
       return {
         label: {
           show: true,
@@ -76,8 +78,11 @@ export class PlayPage {
         name: location?.players.join(''),
         itemStyle: {
           color: '#121212',
-          borderColor: '#69a4e5',
-          borderWidth: 1,
+          shadowBlur: 15,
+          shadowColor: hasData ? '#00FF00' : '#69a4e5',
+          borderColor: hasData ? '#00FF00' : hasPlayer ? '#69a4e5' : '#121212',
+          borderWidth: 2,
+          borderType: 'solid',
         },
         id: node.id,
         value: node.name,
@@ -93,13 +98,15 @@ export class PlayPage {
       return [];
     }
     const maxLatency = Math.max(...graph.edges.map((edge) => edge.latency));
-    const links = graph.edges.map<
+    return graph.edges.map<
       Unpacked<Exclude<GraphSeriesOption['links'], undefined>>
     >((edge) => ({
       source: edge.from,
       target: edge.to,
       lineStyle: {
-        color: '#69a4e5',
+        color: '#186f84',
+        shadowBlur: 10,
+        shadowColor: '#6366f1',
         opacity: 1,
         width: Math.max(
           LINE_MIN_WIDTH,
@@ -111,7 +118,6 @@ export class PlayPage {
         curveness: 0.1,
       },
     }));
-    return links;
   });
 
   readonly graphService = inject(GraphService);

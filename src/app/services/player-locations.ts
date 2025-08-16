@@ -17,7 +17,7 @@ export class PlayerLocationsService {
 
   readonly trigger = toSignal(timer(0, 3000));
 
-  readonly players = ['⛺', '🏠', '🏢', '🏬', '🏪', '🏫', '🏥'];
+  readonly players = ['⛺', '🐈', '🩼', '🦀', '🦜', '🤡', '🕷️'];
 
   readonly locations = resource({
     params: () => ({

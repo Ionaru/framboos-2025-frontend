@@ -20,3 +20,7 @@ h1 {
   background-clip: text;
   background-image: linear-gradient(to bottom, #fff 0, rgba(53, 53, 53) 95%);
 }
+
+om-dotpattern svg {
+    mask-image: radial-gradient(200vw circle at center, transparent, #fff) !important;
+  }
