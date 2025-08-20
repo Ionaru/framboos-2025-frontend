@@ -13,7 +13,7 @@ export const adminPasswordGuard: CanActivateFn = async () => {
     passwordFromStorage;
   try {
     await firstValueFrom(
-      http.get('/raspberry-byte-brawl/admin/players', {
+      http.get('admin/players', {
         headers: { Authorization: `Bearer ${password}` },
       }),
     );
@@ -23,7 +23,7 @@ export const adminPasswordGuard: CanActivateFn = async () => {
     sessionStorage.removeItem('adminPassword');
     alert('Wrong password! This incident will be reported.');
     return router.createUrlTree(['/'], {
-      queryParams: { siteStatus: SiteStatus.WRONG_PASSWORD },
+      queryParams: { siteStatus: SiteStatus.WRONG_ADMIN_PASSWORD },
     });
   }
 };

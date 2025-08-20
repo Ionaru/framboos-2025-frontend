@@ -3,6 +3,7 @@ import { HomePage } from './pages/home';
 import { AdminPage } from './pages/admin';
 import { adminPasswordGuard } from './guards/admin-password';
 import { PlayPage } from './pages/play';
+import { playerPasswordGuard } from './guards/player-password';
 
 export const routes: Routes = [
   {
@@ -12,6 +13,7 @@ export const routes: Routes = [
   {
     path: 'play',
     component: PlayPage,
+    canActivate: [playerPasswordGuard],
   },
   {
     path: 'admin',

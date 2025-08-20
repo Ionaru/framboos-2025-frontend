@@ -6,7 +6,9 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "format": "prettier --write .",
+    "generate": "npx openapi-typescript http://localhost:8080/raspberry-byte-brawl/v3/api-docs -o src/app/api/schema.d.ts"
   },
   "prettier": {
     "overrides": [

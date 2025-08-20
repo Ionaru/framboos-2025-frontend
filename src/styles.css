@@ -19,9 +19,13 @@ html {
 }
 
 om-dotpattern svg {
-    mask-image: radial-gradient(200vw circle at center, transparent, #fff) !important;
-  }
+  mask-image: radial-gradient(
+    200vw circle at center,
+    transparent,
+    #fff
+  ) !important;
+}
 
 om-cryptic-text p {
-display: inline-block;
+  display: inline-block;
 }

@@ -1,19 +1,24 @@
-import { Component, computed, effect, inject, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { Page } from '../components/page';
 
 import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
-// import echarts core
 import * as echarts from 'echarts/core';
 import { EChartsOption } from 'echarts/types/dist/shared';
-
 import { GraphChart } from 'echarts/charts';
 import { GridComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
-import { GraphService } from '../services/graph';
-import { PlayerLocationsService } from '../services/player-locations';
+
 import { LeaderboardComponent } from '../components/leaderboard';
 import { GraphEdge, GraphNode } from '../utils/types';
 import { getLocationType, locationStyles, LocationType } from '../styles/nodes';
+import { GameService } from '../services/game';
 echarts.use([GraphChart, GridComponent, CanvasRenderer]);
 
 const LINE_MIN_WIDTH = 3;
@@ -42,7 +47,7 @@ const LINE_MAX_WIDTH = 10;
       }
       <app-leaderboard
         class="absolute top-1/2 right-0 z-10 m-4 -translate-y-1/2"
-        [locations]="playerLocationsService.locations.value()"
+        [locations]="[]"
         [nodes]="nodes()"
       />
     </app-page>
@@ -54,26 +59,28 @@ const LINE_MAX_WIDTH = 10;
   ],
 })
 export class PlayPage {
-  readonly size = signal(50);
+  readonly playerId = input<string>();
 
   readonly nodePositions = signal<Map<string, [number, number]>>(new Map());
 
   readonly nodes = computed(() => {
-    const graph = this.graphService.graph.value();
+    const graph = this.gameService.network();
     if (!graph) {
       return [];
     }
     const nodePositions = this.nodePositions();
-    const locations = this.playerLocationsService.locations.value();
+    const location = this.gameService.game()?.position;
     return graph.nodes.map<GraphNode>((node) => {
-      const location = locations?.find((location) => location.id === node.id);
-      const locationType = location ? getLocationType(location) : LocationType.NORMAL;
+      const isOnLocation = location === node.id;
+      const locationType = isOnLocation
+        ? getLocationType(isOnLocation)
+        : LocationType.NORMAL;
       const graphNode: GraphNode = {
         label: {
           show: true,
           formatter: '{b}',
         },
-        name: location?.players.join(''),
+        name: isOnLocation ? '👤' : '',
         itemStyle: locationStyles.get(locationType),
         id: node.id,
         value: node.name,
@@ -86,7 +93,7 @@ export class PlayPage {
   });
 
   readonly edges = computed(() => {
-    const graph = this.graphService.graph.value();
+    const graph = this.gameService.network();
     if (!graph) {
       return [];
     }
@@ -111,13 +118,15 @@ export class PlayPage {
     }));
   });
 
-  readonly graphService = inject(GraphService);
-  readonly playerLocationsService = inject(PlayerLocationsService);
+  readonly gameService = inject(GameService);
   readonly chartOption = signal<EChartsOption | undefined>(undefined);
 
   constructor() {
     effect(() => {
-      this.graphService.size.set(this.size());
+      const playerId = this.playerId();
+      if (playerId) {
+        this.gameService.playerId.set(playerId);
+      }
     });
 
     const setInitialOptions = effect(() => {
@@ -170,7 +179,7 @@ export class PlayPage {
     const series = model.getSeriesByIndex(0);
     const nodeData = series.getData();
 
-    const nodes = this.graphService.graph.value()?.nodes;
+    const nodes = this.gameService.network()?.nodes;
 
     const positions = new Map<string, any>();
     nodes?.forEach((node, index) => {

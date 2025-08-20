@@ -1,4 +1,3 @@
-import { NodeLocation } from '../services/player-locations';
 import { GraphNodeStyle } from '../utils/types';
 
 export enum LocationType {
@@ -8,7 +7,7 @@ export enum LocationType {
   TRAP,
 }
 
-export const getLocationType = (location: NodeLocation): LocationType => {
+export const getLocationType = (isOnLocation: boolean): LocationType => {
   if (Math.random() > 0.99) {
     return LocationType.DATA;
   }
@@ -17,7 +16,7 @@ export const getLocationType = (location: NodeLocation): LocationType => {
     return LocationType.TRAP;
   }
 
-  if (location.players.length) {
+  if (isOnLocation) {
     return LocationType.PLAYER;
   }
 
