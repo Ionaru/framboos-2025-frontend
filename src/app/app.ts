@@ -5,8 +5,10 @@ import { PageContainer } from './components/page-container';
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet, PageContainer],
-  templateUrl: './app.html',
+  template: `
+    <app-page-container>
+      <router-outlet />
+    </app-page-container>
+  `,
 })
-export class App {
-  protected readonly title = signal('byte-brawl');
-}
+export class App {}

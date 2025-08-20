@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-page',
-  template: ` <ng-content /> `,
+  template: `<ng-content />`,
   host: {
     class: 'h-screen w-screen block relative',
   },

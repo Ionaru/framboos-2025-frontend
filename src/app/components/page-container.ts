@@ -8,10 +8,6 @@ import { NgxDotpatternComponent } from '@omnedia/ngx-dotpattern';
       <ng-content />
     </om-dotpattern>
   `,
-  styles: `
-    :host {
-    }
-  `,
   imports: [NgxDotpatternComponent],
 })
 export class PageContainer {}

@@ -2,8 +2,6 @@ import { inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CanActivateFn, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import { SiteStatus } from '../errors';
-import { PlayerService } from '../services/player';
 
 export const playerPasswordGuard: CanActivateFn = async () => {
   const router = inject(Router);
@@ -31,8 +29,6 @@ export const playerPasswordGuard: CanActivateFn = async () => {
   } catch (e) {
     sessionStorage.removeItem('playerPassword');
     alert('Unknown player ID or wrong password!');
-    return router.createUrlTree(['/'], {
-      queryParams: { siteStatus: SiteStatus.WRONG_PLAYER_PASSWORD },
-    });
+    return router.createUrlTree(['/']);
   }
 };

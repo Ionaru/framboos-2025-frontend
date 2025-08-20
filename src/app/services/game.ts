@@ -1,12 +1,5 @@
 import { httpResource } from '@angular/common/http';
-import {
-  computed,
-  effect,
-  inject,
-  Injectable,
-  signal,
-  untracked,
-} from '@angular/core';
+import { effect, inject, Injectable, untracked } from '@angular/core';
 import { paths, components } from '../api/schema';
 import { interval } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';

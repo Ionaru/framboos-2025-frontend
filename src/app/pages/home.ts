@@ -1,11 +1,4 @@
-import {
-  Component,
-  computed,
-  effect,
-  input,
-  model,
-  signal,
-} from '@angular/core';
+import { Component, effect, input, model, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NgxBorderBeamComponent } from '@omnedia/ngx-border-beam';
 import { Page } from '../components/page';
@@ -32,10 +25,6 @@ import { FormsModule } from '@angular/forms';
             Click here to try again
           </a>
         </p>
-      } @else if (
-        siteStatus() === SiteStatus.WRONG_PLAYER_PASSWORD.toString()
-      ) {
-        <p class="text-white text-center">Wrong password!</p>
       }
       <om-border-beam
         class=""
