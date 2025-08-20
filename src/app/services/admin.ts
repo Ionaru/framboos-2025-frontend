@@ -3,44 +3,34 @@ import { inject, Injectable, resource } from '@angular/core';
 import { timer } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { GraphService } from './graph';
+import { HttpClient, httpResource } from '@angular/common/http';
 
-export interface NodeLocation {
+export interface Player {
+  name: string;
   id: string;
-  players: string[];
+  emoji: string;
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class AdminService {
-  readonly #graphService = inject(GraphService);
 
-  readonly trigger = toSignal(timer(0, 10000));
+  readonly #http = inject(HttpClient);
 
-  readonly players = ['🚛', '🐈', '🩼', '🦀', '🦜', '🤡', '🕷️'];
+  readonly #players = httpResource<Player[]>(() => '/raspberry-byte-brawl/admin/players');
 
-  readonly locations = resource({
-    params: () => ({
-      graph: this.#graphService.graph.value(),
-      trigger: this.trigger(),
-    }),
-    loader: ({ params }) => {
-      const locations = params.graph?.nodes.map<NodeLocation>((node) => ({
-        id: node.id,
-        players: [],
-      }));
-      if (!locations) {
-        return Promise.resolve([]);
-      }
-      // For each player, place them somewhere on the graph, 2 players can be on the same node
-      const playersToPlace = [...this.players];
-      while (playersToPlace.length > 0) {
-        const randomLocation = getRandomItemFromArray(locations);
-        if (randomLocation) {
-          randomLocation.players.push(playersToPlace.pop()!);
-        }
-      }
-      return Promise.resolve(locations);
-    },
-  });
+  readonly players = this.#players.asReadonly();
+
+  deletePlayer(player: Player) {
+    this.#http.delete(`/raspberry-byte-brawl/admin/players/${player.id}`).subscribe(() => {
+      this.#players.reload();
+    });
+  }
+
+  deleteAllPlayers() {
+    this.#http.delete('/raspberry-byte-brawl/admin/players').subscribe(() => {
+      this.#players.reload();
+    });
+  }
 }
