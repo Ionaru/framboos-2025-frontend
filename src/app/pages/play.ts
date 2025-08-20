@@ -69,9 +69,9 @@ export class PlayPage {
       return [];
     }
     const nodePositions = this.nodePositions();
-    const location = this.gameService.game()?.position;
+    const location = this.gameService.game()?.location;
     return graph.nodes.map<GraphNode>((node) => {
-      const isOnLocation = location === node.id;
+      const isOnLocation = location === node.ipAddress;
       const locationType = isOnLocation
         ? getLocationType(isOnLocation)
         : LocationType.NORMAL;
@@ -82,10 +82,10 @@ export class PlayPage {
         },
         name: isOnLocation ? '👤' : '',
         itemStyle: locationStyles.get(locationType),
-        id: node.id,
-        value: node.name,
-        x: nodePositions.get(node.id)?.[0],
-        y: nodePositions.get(node.id)?.[1],
+        id: node.ipAddress,
+        value: node.ipAddress,
+        x: nodePositions.get(node.ipAddress)?.[0],
+        y: nodePositions.get(node.ipAddress)?.[1],
       };
 
       return graphNode;
@@ -184,7 +184,7 @@ export class PlayPage {
     const positions = new Map<string, any>();
     nodes?.forEach((node, index) => {
       const layout = nodeData.getItemLayout(index);
-      positions.set(node.id, layout);
+      positions.set(node.ipAddress, layout);
     });
 
     this.nodePositions.set(positions);

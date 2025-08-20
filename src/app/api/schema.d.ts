@@ -4,470 +4,466 @@
  */
 
 export interface paths {
-  '/admin/settings/network-size/{networkSize}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/admin/settings/network-size/{networkSize}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Update the network size */
+        put: operations["updateNetworkSize"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    /** Update the network size */
-    put: operations['updateNetworkSize'];
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/player': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/player": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Register a new player (or verify the registration of an existing player) */
+        post: operations["registerPlayer"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /** Register a new player (or verify the registration of an existing player) */
-    post: operations['registerPlayer'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/reset': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/admin/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reset all the running games */
+        post: operations["reset"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /** Reset all the running games */
-    post: operations['reset'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/final-game': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/admin/final-game": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Start the FINAL GAME */
+        post: operations["startFinalGame"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /** Start the FINAL GAME */
-    post: operations['startFinalGame'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/player/supported-emoji': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/player/supported-emoji": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get the list of supported emoji for the player profile */
+        get: operations["getSupportedEmoji"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Get the list of supported emoji for the player profile */
-    get: operations['getSupportedEmoji'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/game/{playerId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/game/{playerId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Gets the player state of the current game (if a game is busy or can be started) */
+        get: operations["getCurrentGameState"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Gets the player state of the current game (if a game is busy or can be started) */
-    get: operations['getCurrentGameState'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/game/network/{playerId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/game/network/{playerId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Gets the network of nodes and edges for the current game (if a game is busy or can be started) */
+        get: operations["getCurrentNetwork"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Gets the network of nodes and edges for the current game (if a game is busy or can be started) */
-    get: operations['getCurrentNetwork'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/settings': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/admin/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get the game settings */
+        get: operations["getGameSettings"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Get the game settings */
-    get: operations['getGameSettings'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/players': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/admin/players": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get the list of registered players */
+        get: operations["getPlayers"];
+        put?: never;
+        post?: never;
+        /** Delete all players */
+        delete: operations["removeAllPlayers"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Get the list of registered players */
-    get: operations['getPlayers'];
-    put?: never;
-    post?: never;
-    /** Delete all players */
-    delete: operations['removeAllPlayers'];
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/admin/players/{id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/admin/players/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete a registered player */
+        delete: operations["removePlayer"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    post?: never;
-    /** Delete a registered player */
-    delete: operations['removePlayer'];
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    GameSettingsDTO: {
-      /** Format: int32 */
-      networkSize: number;
+    schemas: {
+        GameSettingsDTO: {
+            /** Format: int32 */
+            networkSize: number;
+        };
+        PlayerRegistrationRequest: {
+            name: string;
+            password: string;
+            emojiAlias: string;
+        };
+        PlayerRegistrationResponse: {
+            /** @enum {string} */
+            status: "Registered" | "Invalid";
+            /** Format: uuid */
+            id?: string;
+            message?: string;
+        };
+        EmptyBody: unknown;
+        Emoji: {
+            emoji: string;
+            description: string;
+            aliases: string[];
+        };
+        GameStateDTO: {
+            /** @enum {string} */
+            state: "Waiting" | "Playing" | "Finished";
+            /** Format: uuid */
+            gameId?: string;
+            location?: string;
+        };
+        EdgeDTO: {
+            from: string;
+            to: string;
+            /** Format: int32 */
+            latency: number;
+        };
+        NetworkDTO: {
+            nodes: components["schemas"]["NetworkNodeDTO"][];
+            edges: components["schemas"]["EdgeDTO"][];
+        };
+        NetworkNodeDTO: {
+            ipAddress: string;
+        };
+        Player: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            emoji: string;
+        };
     };
-    PlayerRegistrationRequest: {
-      name: string;
-      password: string;
-      emojiAlias: string;
-    };
-    PlayerRegistrationResponse: {
-      /** @enum {string} */
-      status: 'Registered' | 'Invalid';
-      /** Format: uuid */
-      id?: string;
-      message?: string;
-    };
-    EmptyBody: unknown;
-    Emoji: {
-      emoji: string;
-      description: string;
-      aliases: string[];
-    };
-    GameStateDTO: {
-      /** @enum {string} */
-      state: 'Waiting' | 'Playing' | 'Finished';
-      /** Format: uuid */
-      gameId?: string;
-      position?: string;
-    };
-    EdgeDTO: {
-      /** Format: uuid */
-      from: string;
-      /** Format: uuid */
-      to: string;
-      /** Format: int32 */
-      latency: number;
-    };
-    NetworkDTO: {
-      nodes: components['schemas']['NetworkNodeDTO'][];
-      edges: components['schemas']['EdgeDTO'][];
-    };
-    NetworkNodeDTO: {
-      /** Format: uuid */
-      id: string;
-      name: string;
-    };
-    Player: {
-      /** Format: uuid */
-      id: string;
-      name: string;
-      emoji: string;
-    };
-  };
-  responses: never;
-  parameters: never;
-  requestBodies: never;
-  headers: never;
-  pathItems: never;
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
 export type $defs = Record<string, never>;
 export interface operations {
-  updateNetworkSize: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        networkSize: number;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    updateNetworkSize: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                networkSize: number;
+            };
+            cookie?: never;
         };
-        content: {
-          '*/*': components['schemas']['GameSettingsDTO'];
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["GameSettingsDTO"];
+                };
+            };
         };
-      };
     };
-  };
-  registerPlayer: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['PlayerRegistrationRequest'];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    registerPlayer: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content: {
-          'application/json': components['schemas']['PlayerRegistrationResponse'];
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PlayerRegistrationRequest"];
+            };
         };
-      };
-    };
-  };
-  reset: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlayerRegistrationResponse"];
+                };
+            };
         };
-        content: {
-          '*/*': components['schemas']['EmptyBody'];
+    };
+    reset: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-    };
-  };
-  startFinalGame: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["EmptyBody"];
+                };
+            };
         };
-        content?: never;
-      };
     };
-  };
-  getSupportedEmoji: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    startFinalGame: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content: {
-          'application/json': components['schemas']['Emoji'][];
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
         };
-      };
     };
-  };
-  getCurrentGameState: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        playerId: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    getSupportedEmoji: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content: {
-          '*/*': components['schemas']['GameStateDTO'];
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Emoji"][];
+                };
+            };
         };
-      };
     };
-  };
-  getCurrentNetwork: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        playerId: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    getCurrentGameState: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                playerId: string;
+            };
+            cookie?: never;
         };
-        content: {
-          '*/*': components['schemas']['NetworkDTO'];
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["GameStateDTO"];
+                };
+            };
         };
-      };
     };
-  };
-  getGameSettings: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    getCurrentNetwork: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                playerId: string;
+            };
+            cookie?: never;
         };
-        content: {
-          '*/*': components['schemas']['GameSettingsDTO'];
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["NetworkDTO"];
+                };
+            };
         };
-      };
     };
-  };
-  getPlayers: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    getGameSettings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content: {
-          'application/json': components['schemas']['Player'][];
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["GameSettingsDTO"];
+                };
+            };
         };
-      };
     };
-  };
-  removeAllPlayers: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    getPlayers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content: {
-          '*/*': components['schemas']['EmptyBody'];
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Player"][];
+                };
+            };
         };
-      };
     };
-  };
-  removePlayer: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    removeAllPlayers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content: {
-          '*/*': components['schemas']['EmptyBody'];
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["EmptyBody"];
+                };
+            };
         };
-      };
     };
-  };
+    removePlayer: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["EmptyBody"];
+                };
+            };
+        };
+    };
 }
