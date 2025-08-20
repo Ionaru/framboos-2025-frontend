@@ -4,7 +4,7 @@ import { Page } from '../components/page';
 import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
 // import echarts core
 import * as echarts from 'echarts/core';
-import { EChartsOption, GraphSeriesOption } from 'echarts/types/dist/shared';
+import { EChartsOption } from 'echarts/types/dist/shared';
 
 import { GraphChart } from 'echarts/charts';
 import { GridComponent } from 'echarts/components';
@@ -12,12 +12,12 @@ import { CanvasRenderer } from 'echarts/renderers';
 import { GraphService } from '../services/graph';
 import { PlayerLocationsService } from '../services/player-locations';
 import { LeaderboardComponent } from '../components/leaderboard';
+import { GraphEdge, GraphNode } from '../utils/types';
+import { getLocationType, locationStyles, LocationType } from '../styles/nodes';
 echarts.use([GraphChart, GridComponent, CanvasRenderer]);
 
 const LINE_MIN_WIDTH = 3;
 const LINE_MAX_WIDTH = 10;
-
-type Unpacked<T> = T extends (infer U)[] ? U : T;
 
 @Component({
   imports: [Page, NgxEchartsDirective, LeaderboardComponent],
@@ -66,29 +66,23 @@ export class PlayPage {
     }
     const nodePositions = this.nodePositions();
     const locations = this.playerLocationsService.locations.value();
-    return graph.nodes.map<Unpacked<GraphSeriesOption['data']>>((node) => {
+    return graph.nodes.map<GraphNode>((node) => {
       const location = locations?.find((location) => location.id === node.id);
-      const hasPlayer = location?.players.length && location.players.length > 0;
-      const hasData = Math.random() > 0.99;
-      return {
+      const locationType = location ? getLocationType(location) : LocationType.NORMAL;
+      const graphNode: GraphNode = {
         label: {
           show: true,
           formatter: '{b}',
         },
         name: location?.players.join(''),
-        itemStyle: {
-          color: '#121212',
-          shadowBlur: 15,
-          shadowColor: hasData ? '#00FF00' : '#69a4e5',
-          borderColor: hasData ? '#00FF00' : hasPlayer ? '#69a4e5' : '#121212',
-          borderWidth: 2,
-          borderType: 'solid',
-        },
+        itemStyle: locationStyles.get(locationType),
         id: node.id,
         value: node.name,
         x: nodePositions.get(node.id)?.[0],
         y: nodePositions.get(node.id)?.[1],
       };
+
+      return graphNode;
     });
   });
 
@@ -98,9 +92,7 @@ export class PlayPage {
       return [];
     }
     const maxLatency = Math.max(...graph.edges.map((edge) => edge.latency));
-    return graph.edges.map<
-      Unpacked<Exclude<GraphSeriesOption['links'], undefined>>
-    >((edge) => ({
+    return graph.edges.map<GraphEdge>((edge) => ({
       source: edge.from,
       target: edge.to,
       lineStyle: {

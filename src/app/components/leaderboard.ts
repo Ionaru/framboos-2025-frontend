@@ -13,10 +13,10 @@ type Unpacked<T> = T extends (infer U)[] ? U : T;
 @Component({
   selector: 'app-leaderboard',
   template: `
-  <div class="grid gap-x-4 gap-y-2 grid-cols-[auto_10rem_auto]">
+  <div class="grid gap-x-4 gap-y-1 grid-cols-[auto_10rem_auto]">
     @for (entry of leaderboard(); track entry.name) {
-      <div class="grid col-span-full grid-cols-subgrid">
-        <span class="text-lg font-bold">{{ entry.name }}</span>
+      <div class="grid col-span-full grid-cols-subgrid items-center">
+        <span class="text-2xl font-bold">{{ entry.name }}</span>
         <span class="text-lg font-mono">{{ entry.location }}</span>
         <span class="text-lg">{{ entry.score }}</span>
       </div>

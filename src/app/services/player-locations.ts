@@ -15,7 +15,7 @@ export interface NodeLocation {
 export class PlayerLocationsService {
   readonly #graphService = inject(GraphService);
 
-  readonly trigger = toSignal(timer(0, 3000));
+  readonly trigger = toSignal(timer(0, 10000));
 
   readonly players = ['⛺', '🐈', '🩼', '🦀', '🦜', '🤡', '🕷️'];
 
