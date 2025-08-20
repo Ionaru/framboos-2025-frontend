@@ -12,15 +12,16 @@ html {
   color-scheme: dark;
 }
 
-h1 {
-  font-size: 6rem;
-  font-weight: bold;
+.metal {
   color: transparent;
-  -webkit-background-clip: text;
   background-clip: text;
-  background-image: linear-gradient(to bottom, #fff 0, rgba(53, 53, 53) 95%);
+  background-image: linear-gradient(to bottom, #fff 0, rgba(53, 53, 53) 120%);
 }
 
 om-dotpattern svg {
     mask-image: radial-gradient(200vw circle at center, transparent, #fff) !important;
   }
+
+om-cryptic-text p {
+display: inline-block;
+}

@@ -1,18 +1,29 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { SiteStatus } from '../errors';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
-export const adminPasswordGuard: CanActivateFn = () => {
+export const adminPasswordGuard: CanActivateFn = async () => {
   const router = inject(Router);
-  const password = prompt('Hi there! What is the password? 🔑');
-  // TODO: Check password with server.
-  const passwordResult = password === '1234';
-  if (passwordResult) {
+  const http = inject(HttpClient);
+  const passwordFromStorage = sessionStorage.getItem('adminPassword') ?? '';
+  const password =
+    prompt('Hi there! What is the password? 🔒', passwordFromStorage) ??
+    passwordFromStorage;
+  try {
+    await firstValueFrom(
+      http.get('/raspberry-byte-brawl/admin/players', {
+        headers: { Authorization: `Bearer ${password}` },
+      }),
+    );
+    sessionStorage.setItem('adminPassword', password);
     return true;
+  } catch (e) {
+    sessionStorage.removeItem('adminPassword');
+    alert('Wrong password! This incident will be reported.');
+    return router.createUrlTree(['/'], {
+      queryParams: { siteStatus: SiteStatus.WRONG_PASSWORD },
+    });
   }
-
-  alert('Wrong password! This incident will be reported.');
-  return router.createUrlTree(['/'], {
-    queryParams: { siteStatus: SiteStatus.WRONG_PASSWORD },
-  });
 };

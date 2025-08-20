@@ -1,10 +1,9 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, effect, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { RaspberryEmoji } from '../components/raspberry-emoji';
 import { NgxBorderBeamComponent } from '@omnedia/ngx-border-beam';
 import { Page } from '../components/page';
 import { NgxNeonUnderlineComponent } from '@omnedia/ngx-neon-underline';
-import { NgxFlickeringGridComponent } from '@omnedia/ngx-flickering-grid';
+import { NgxCrypticTextComponent } from '@omnedia/ngx-cryptic-text';
 import { SiteStatus } from '../errors';
 
 @Component({
@@ -13,11 +12,17 @@ import { SiteStatus } from '../errors';
     NgxBorderBeamComponent,
     Page,
     NgxNeonUnderlineComponent,
+    NgxCrypticTextComponent,
   ],
   template: `
     <app-page class="flex flex-col items-center justify-center">
       @if (siteStatus() === SiteStatus.WRONG_PASSWORD.toString()) {
-        <p class="text-white">Wrong password!</p>
+        <p class="text-white text-center">Wrong password!</p>
+        <p class="text-gray-400 text-center">
+          <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank">
+            Click here to try again
+          </a>
+        </p>
       }
       <om-border-beam
         class=""
@@ -25,8 +30,9 @@ import { SiteStatus } from '../errors';
         [gradientColorEnd]="'#6366f1'"
       >
         <div class="rounded p-8">
-          <h1 class="text-4xl font-bold h-50">
-            🍇 Byte Brawl
+          <h2 class="text-4xl font-bold text-center metal font-mono">🍇 Vrolijke Framboos 2025</h2>
+          <h1 class="text-8xl font-bold h-50 metal font-mono">
+            🕸️ <om-cryptic-text [text]="titlePartOne()" />&nbsp;<om-cryptic-text [text]="titlePartTwo()" /> 🕷️
             <om-neon-underline />
           </h1>
           <div class="flex flex-col items-center justify-center gap-4 mt-8">
@@ -34,10 +40,10 @@ import { SiteStatus } from '../errors';
               class="bg-primary text-white px-4 py-2 rounded cursor-pointer"
               routerLink="/play"
             >
-              Join the Byte Brawl
+              Join the {{ titlePartOne() }} {{ titlePartTwo() }}
             </button>
             <p
-              class="dark:text-white/50 text-black/50 cursor-pointer"
+              class="text-gray-400 cursor-pointer"
               routerLink="/admin"
             >
               Admin Panel
@@ -63,4 +69,9 @@ import { SiteStatus } from '../errors';
 export class HomePage {
   readonly siteStatus = input<string>();
   readonly SiteStatus = SiteStatus;
+
+  readonly titleParts = [["Byte", "Web"], ["Brawl", "Crawl"]] as const;
+
+  readonly titlePartOne = signal<string>(this.titleParts[0][Math.floor(Math.random() * this.titleParts[0].length)]);
+  readonly titlePartTwo = signal<string>(this.titleParts[1][Math.floor(Math.random() * this.titleParts[1].length)]);
 }
