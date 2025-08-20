@@ -107,5 +107,14 @@ export class HomePage {
       '',
   );
 
-  readonly playerId = model<string>('');
+  readonly playerId = model<string | undefined>(undefined);
+
+  constructor() {
+    effect(() => {
+      const playerId = sessionStorage.getItem('playerId');
+      if (playerId) {
+        this.playerId.set(playerId);
+      }
+    });
+  }
 }

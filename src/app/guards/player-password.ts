@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { CanActivateFn, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { SiteStatus } from '../errors';
+import { PlayerService } from '../services/player';
 
 export const playerPasswordGuard: CanActivateFn = async () => {
   const router = inject(Router);
@@ -24,6 +25,7 @@ export const playerPasswordGuard: CanActivateFn = async () => {
         headers: { Authorization: `Bearer ${password}` },
       }),
     );
+    sessionStorage.setItem('playerId', playerId);
     sessionStorage.setItem('playerPassword', password);
     return true;
   } catch (e) {

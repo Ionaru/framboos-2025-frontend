@@ -28,8 +28,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Gets player data */
-        get: operations["getPlayers"];
+        get?: never;
         put?: never;
         /** Register a new player (or verify the registration of an existing player) */
         post: operations["registerPlayer"];
@@ -166,7 +165,7 @@ export interface paths {
             cookie?: never;
         };
         /** Get the list of registered players */
-        get: operations["getPlayers_1"];
+        get: operations["getPlayers"];
         put?: never;
         post?: never;
         /** Delete all players */
@@ -269,26 +268,6 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["GameSettingsDTO"];
-                };
-            };
-        };
-    };
-    getPlayers: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Player"][];
                 };
             };
         };
@@ -461,7 +440,7 @@ export interface operations {
             };
         };
     };
-    getPlayers_1: {
+    getPlayers: {
         parameters: {
             query?: never;
             header?: never;

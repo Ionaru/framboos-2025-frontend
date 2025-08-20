@@ -1,5 +1,5 @@
-import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { HttpClient, httpResource } from '@angular/common/http';
+import { inject, Injectable, signal } from '@angular/core';
 import { paths, components } from '../api/schema';
 
 export type Player = components['schemas']['Player'];
@@ -8,11 +8,14 @@ export type Player = components['schemas']['Player'];
   providedIn: 'root',
 })
 export class PlayerService {
-  readonly #http = inject(HttpClient);
+  readonly playerId = signal<string | undefined>(undefined);
 
-  getPlayer(playerId: string) {
-    return this.#http.get<
-      paths['/player/{playerId}']['get']['responses'][200]['content']['application/json']
-    >(`player/${playerId}`);
-  }
+  readonly #player = httpResource<
+    paths['/player/{playerId}']['get']['responses'][200]['content']['application/json']
+  >(() => {
+    const playerId = this.playerId();
+    return playerId ? `player/${playerId}` : undefined;
+  });
+
+  readonly player = this.#player.value.asReadonly();
 }

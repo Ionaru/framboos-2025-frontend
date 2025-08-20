@@ -4,6 +4,7 @@ import {
   effect,
   inject,
   input,
+  OnDestroy,
   signal,
 } from '@angular/core';
 import { Page } from '../components/page';
@@ -14,14 +15,12 @@ import { EChartsOption } from 'echarts/types/dist/shared';
 import { GraphChart } from 'echarts/charts';
 import { GridComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 
 import { LeaderboardComponent } from '../components/leaderboard';
 import { GraphEdge, GraphNode } from '../utils/types';
 import { getLocationType, locationStyles, LocationType } from '../styles/nodes';
 import { GameService } from '../services/game';
 import { PlayerService } from '../services/player';
-import { filter, switchMap } from 'rxjs';
 echarts.use([GraphChart, GridComponent, CanvasRenderer]);
 
 const LINE_MIN_WIDTH = 3;
@@ -61,14 +60,14 @@ const LINE_MAX_WIDTH = 10;
     }),
   ],
 })
-export class PlayPage {
+export class PlayPage implements OnDestroy {
   readonly playerId = input<string>();
 
   readonly nodePositions = signal<Map<string, [number, number]>>(new Map());
 
   readonly nodes = computed(() => {
     const graph = this.gameService.network();
-    const player = this.player();
+    const player = this.playerService.player();
     if (!graph) {
       return [];
     }
@@ -126,24 +125,12 @@ export class PlayPage {
   readonly playerService = inject(PlayerService);
   readonly chartOption = signal<EChartsOption | undefined>(undefined);
 
-  readonly player = toSignal(
-    toObservable(this.playerId).pipe(
-      filter((playerId): playerId is string => Boolean(playerId)),
-      switchMap((playerId) => this.playerService.getPlayer(playerId)),
-    ),
-  );
-
   constructor() {
     effect(() => {
       const playerId = this.playerId();
       if (playerId) {
-        this.gameService.playerId.set(playerId);
+        this.playerService.playerId.set(playerId);
       }
-    });
-
-    effect(() => {
-      const player = this.player();
-      console.log('player', player);
     });
 
     const setInitialOptions = effect(() => {
@@ -205,5 +192,9 @@ export class PlayPage {
     });
 
     this.nodePositions.set(positions);
+  }
+
+  ngOnDestroy() {
+    this.playerService.playerId.set(undefined);
   }
 }
