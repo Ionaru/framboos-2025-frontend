@@ -1,8 +1,8 @@
 import { inject } from '@angular/core';
-import { ActivatedRoute, CanActivateFn, Router } from '@angular/router';
-import { SiteStatus } from '../errors';
 import { HttpClient } from '@angular/common/http';
+import { CanActivateFn, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { SiteStatus } from '../errors';
 
 export const playerPasswordGuard: CanActivateFn = async () => {
   const router = inject(Router);
@@ -16,11 +16,11 @@ export const playerPasswordGuard: CanActivateFn = async () => {
 
   const passwordFromStorage = sessionStorage.getItem('playerPassword') ?? '';
   const password =
-    prompt('Hi there! What is the password? 🔒', passwordFromStorage) ??
+    prompt('What is your password? 🔒', passwordFromStorage) ??
     passwordFromStorage;
   try {
     await firstValueFrom(
-      http.get(`game/${playerId}`, {
+      http.get(`player/${playerId}`, {
         headers: { Authorization: `Bearer ${password}` },
       }),
     );
@@ -28,7 +28,7 @@ export const playerPasswordGuard: CanActivateFn = async () => {
     return true;
   } catch (e) {
     sessionStorage.removeItem('playerPassword');
-    alert('Wrong password!');
+    alert('Unknown player ID or wrong password!');
     return router.createUrlTree(['/'], {
       queryParams: { siteStatus: SiteStatus.WRONG_PLAYER_PASSWORD },
     });

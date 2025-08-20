@@ -14,11 +14,14 @@ import { EChartsOption } from 'echarts/types/dist/shared';
 import { GraphChart } from 'echarts/charts';
 import { GridComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 
 import { LeaderboardComponent } from '../components/leaderboard';
 import { GraphEdge, GraphNode } from '../utils/types';
 import { getLocationType, locationStyles, LocationType } from '../styles/nodes';
 import { GameService } from '../services/game';
+import { PlayerService } from '../services/player';
+import { filter, switchMap } from 'rxjs';
 echarts.use([GraphChart, GridComponent, CanvasRenderer]);
 
 const LINE_MIN_WIDTH = 3;
@@ -65,13 +68,14 @@ export class PlayPage {
 
   readonly nodes = computed(() => {
     const graph = this.gameService.network();
+    const player = this.player();
     if (!graph) {
       return [];
     }
     const nodePositions = this.nodePositions();
     const location = this.gameService.game()?.location;
     return graph.nodes.map<GraphNode>((node) => {
-      const isOnLocation = location === node.ipAddress;
+      const isOnLocation = location === node;
       const locationType = isOnLocation
         ? getLocationType(isOnLocation)
         : LocationType.NORMAL;
@@ -80,12 +84,12 @@ export class PlayPage {
           show: true,
           formatter: '{b}',
         },
-        name: isOnLocation ? '👤' : '',
+        name: isOnLocation ? player?.emoji : '',
         itemStyle: locationStyles.get(locationType),
-        id: node.ipAddress,
-        value: node.ipAddress,
-        x: nodePositions.get(node.ipAddress)?.[0],
-        y: nodePositions.get(node.ipAddress)?.[1],
+        id: node,
+        value: node,
+        x: nodePositions.get(node)?.[0],
+        y: nodePositions.get(node)?.[1],
       };
 
       return graphNode;
@@ -119,7 +123,15 @@ export class PlayPage {
   });
 
   readonly gameService = inject(GameService);
+  readonly playerService = inject(PlayerService);
   readonly chartOption = signal<EChartsOption | undefined>(undefined);
+
+  readonly player = toSignal(
+    toObservable(this.playerId).pipe(
+      filter((playerId): playerId is string => Boolean(playerId)),
+      switchMap((playerId) => this.playerService.getPlayer(playerId)),
+    ),
+  );
 
   constructor() {
     effect(() => {
@@ -127,6 +139,11 @@ export class PlayPage {
       if (playerId) {
         this.gameService.playerId.set(playerId);
       }
+    });
+
+    effect(() => {
+      const player = this.player();
+      console.log('player', player);
     });
 
     const setInitialOptions = effect(() => {
@@ -184,7 +201,7 @@ export class PlayPage {
     const positions = new Map<string, any>();
     nodes?.forEach((node, index) => {
       const layout = nodeData.getItemLayout(index);
-      positions.set(node.ipAddress, layout);
+      positions.set(node, layout);
     });
 
     this.nodePositions.set(positions);

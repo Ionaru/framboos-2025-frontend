@@ -4,7 +4,7 @@ export const playerPasswordInterceptor: HttpInterceptorFn = (req, next) => {
   const playerPassword = sessionStorage.getItem('playerPassword');
   if (
     playerPassword &&
-    req.url.includes('/game/') &&
+    ['/game/', '/player/'].some((url) => req.url.includes(url)) &&
     !req.headers.has('Authorization')
   ) {
     req = req.clone({

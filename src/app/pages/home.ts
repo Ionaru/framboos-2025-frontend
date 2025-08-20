@@ -56,7 +56,8 @@ import { FormsModule } from '@angular/forms';
           <div class="flex flex-col items-center justify-center gap-4 mt-8">
             <input
               type="text"
-              class="bg-primary text-white px-4 py-2 rounded cursor-pointer"
+              placeholder="Enter your player ID"
+              class="bg-primary text-white px-4 py-2 rounded cursor-pointer text-center w-full"
               [(ngModel)]="playerId"
             />
             <button

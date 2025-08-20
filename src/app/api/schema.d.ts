@@ -28,7 +28,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Gets player data */
+        get: operations["getPlayers"];
         put?: never;
         /** Register a new player (or verify the registration of an existing player) */
         post: operations["registerPlayer"];
@@ -66,6 +67,23 @@ export interface paths {
         put?: never;
         /** Start the FINAL GAME */
         post: operations["startFinalGame"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/player/{playerId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Gets player data */
+        get: operations["getPlayer"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -148,7 +166,7 @@ export interface paths {
             cookie?: never;
         };
         /** Get the list of registered players */
-        get: operations["getPlayers"];
+        get: operations["getPlayers_1"];
         put?: never;
         post?: never;
         /** Delete all players */
@@ -196,6 +214,12 @@ export interface components {
             message?: string;
         };
         EmptyBody: unknown;
+        Player: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            emoji: string;
+        };
         Emoji: {
             emoji: string;
             description: string;
@@ -215,17 +239,8 @@ export interface components {
             latency: number;
         };
         NetworkDTO: {
-            nodes: components["schemas"]["NetworkNodeDTO"][];
+            nodes: string[];
             edges: components["schemas"]["EdgeDTO"][];
-        };
-        NetworkNodeDTO: {
-            ipAddress: string;
-        };
-        Player: {
-            /** Format: uuid */
-            id: string;
-            name: string;
-            emoji: string;
         };
     };
     responses: never;
@@ -254,6 +269,26 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["GameSettingsDTO"];
+                };
+            };
+        };
+    };
+    getPlayers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Player"][];
                 };
             };
         };
@@ -317,6 +352,28 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    getPlayer: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                playerId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Player"];
+                };
             };
         };
     };
@@ -404,7 +461,7 @@ export interface operations {
             };
         };
     };
-    getPlayers: {
+    getPlayers_1: {
         parameters: {
             query?: never;
             header?: never;
