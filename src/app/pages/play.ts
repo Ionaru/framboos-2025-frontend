@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { Page } from '../components/page';
 
 import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
@@ -38,7 +38,6 @@ const LINE_MAX_WIDTH = 10;
               },
             ],
           }"
-          class="demo-chart"
         ></div>
       }
       <app-leaderboard
@@ -55,7 +54,7 @@ const LINE_MAX_WIDTH = 10;
   ],
 })
 export class PlayPage {
-  readonly size = signal(75);
+  readonly size = signal(50);
 
   readonly nodePositions = signal<Map<string, [number, number]>>(new Map());
 
@@ -138,14 +137,6 @@ export class PlayPage {
             data,
             links,
             layout: 'force',
-            // label: {
-            //   show: true,
-            //   position: 'right',
-            //   formatter: '{b}'
-            // },
-            labelLayout: {
-              hideOverlap: true,
-            },
             symbolSize: 25,
             force: {
               gravity: 0.4,

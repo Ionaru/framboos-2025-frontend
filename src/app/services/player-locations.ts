@@ -17,7 +17,7 @@ export class PlayerLocationsService {
 
   readonly trigger = toSignal(timer(0, 10000));
 
-  readonly players = ['⛺', '🐈', '🩼', '🦀', '🦜', '🤡', '🕷️'];
+  readonly players = ['🚛', '🐈', '🩼', '🦀', '🦜', '🤡', '🕷️'];
 
   readonly locations = resource({
     params: () => ({
@@ -25,7 +25,6 @@ export class PlayerLocationsService {
       trigger: this.trigger(),
     }),
     loader: ({ params }) => {
-      console.log('Loading locations');
       const locations = params.graph?.nodes.map<NodeLocation>((node) => ({
         id: node.id,
         players: [],
