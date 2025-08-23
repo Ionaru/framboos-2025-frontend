@@ -226,6 +226,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/games": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get an overview of all the games */
+        get: operations["getAllGames"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/players/{id}": {
         parameters: {
             query?: never;
@@ -286,6 +303,8 @@ export interface components {
             /** Format: uuid */
             gameId?: string;
             location?: string;
+            /** @enum {string} */
+            action?: "Idle" | "Moving" | "Downloading";
             dataSources?: {
                 [key: string]: components["schemas"]["DataSourceDTO"];
             };
@@ -293,7 +312,7 @@ export interface components {
             points: number;
         };
         EmptyBody: unknown;
-        Player: {
+        PlayerDTO: {
             /** Format: uuid */
             id: string;
             name: string;
@@ -313,6 +332,48 @@ export interface components {
         NetworkDTO: {
             nodes: string[];
             edges: components["schemas"]["EdgeDTO"][];
+        };
+        GameOverviewDTO: {
+            finalGame?: components["schemas"]["GameStatisticsDTO"];
+            practiceGames: {
+                [key: string]: components["schemas"]["GameStatisticsDTO"];
+            };
+            players: {
+                [key: string]: components["schemas"]["PlayerDTO"];
+            };
+        };
+        GameStatisticsDTO: {
+            /** Format: uuid */
+            id: string;
+            network: components["schemas"]["NetworkDTO"];
+            players: {
+                [key: string]: components["schemas"]["PlayerStatisticsDTO"];
+            };
+            dataSources: {
+                [key: string]: components["schemas"]["DataSourceDTO"];
+            };
+            ranking: components["schemas"]["PlayerScoreDTO"][];
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            startedAt?: string;
+            /** Format: date-time */
+            lastUpdatedAt: string;
+        };
+        PlayerScoreDTO: {
+            /** Format: uuid */
+            playerId: string;
+            /** Format: int32 */
+            score: number;
+        };
+        PlayerStatisticsDTO: {
+            location: string;
+            /** @enum {string} */
+            action: "Idle" | "Moving" | "Downloading";
+            /** Format: int32 */
+            points: number;
+            /** Format: date-time */
+            lastUpdated: string;
         };
     };
     responses: never;
@@ -493,7 +554,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Player"];
+                    "application/json": components["schemas"]["PlayerDTO"];
                 };
             };
         };
@@ -597,7 +658,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Player"][];
+                    "application/json": components["schemas"]["PlayerDTO"][];
                 };
             };
         };
@@ -618,6 +679,26 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["EmptyBody"];
+                };
+            };
+        };
+    };
+    getAllGames: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["GameOverviewDTO"];
                 };
             };
         };

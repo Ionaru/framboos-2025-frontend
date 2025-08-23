@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient, httpResource } from '@angular/common/http';
 import { components, paths } from '../api/schema';
 
-export type Player = components['schemas']['Player'];
+export type Player = components['schemas']['PlayerDTO'];
 
 @Injectable({
   providedIn: 'root',
