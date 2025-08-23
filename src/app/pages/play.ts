@@ -27,6 +27,7 @@ const LINE_MIN_WIDTH = 3;
 const LINE_MAX_WIDTH = 10;
 
 @Component({
+  selector: 'app-play',
   imports: [Page, NgxEchartsDirective, LeaderboardComponent],
   template: `
     <app-page class="flex flex-col items-center justify-center">
@@ -62,6 +63,7 @@ const LINE_MAX_WIDTH = 10;
 })
 export class PlayPage implements OnDestroy {
   readonly playerId = input<string>();
+  readonly adminOverride = input(false);
 
   readonly nodePositions = signal<Map<string, [number, number]>>(new Map());
 

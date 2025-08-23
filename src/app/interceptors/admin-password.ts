@@ -4,7 +4,6 @@ export const adminPasswordInterceptor: HttpInterceptorFn = (req, next) => {
   const adminPassword = sessionStorage.getItem('adminPassword');
   if (
     adminPassword &&
-    req.url.includes('/admin/') &&
     !req.headers.has('Authorization')
   ) {
     req = req.clone({

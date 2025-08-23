@@ -16,6 +16,10 @@ export class AdminService {
 
   readonly players = this.#players.asReadonly();
 
+  reloadPlayers() {
+    this.#players.reload();
+  }
+
   deletePlayer(player: Player) {
     this.#http
       .delete<

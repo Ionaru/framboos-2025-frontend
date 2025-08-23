@@ -4,6 +4,7 @@ import { AdminPage } from './pages/admin';
 import { adminPasswordGuard } from './guards/admin-password';
 import { PlayPage } from './pages/play';
 import { playerPasswordGuard } from './guards/player-password';
+import { SpectatePage } from './pages/spectate';
 
 export const routes: Routes = [
   {
@@ -18,6 +19,11 @@ export const routes: Routes = [
   {
     path: 'admin',
     component: AdminPage,
+    canActivate: [adminPasswordGuard],
+  },
+  {
+    path: 'spectate',
+    component: SpectatePage,
     canActivate: [adminPasswordGuard],
   },
   {

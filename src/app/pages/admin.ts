@@ -14,12 +14,12 @@ import { Router } from '@angular/router';
             @for (player of players(); track player.id) {
               <li class="flex items-center gap-2 my-2">
                 <span class="text-2xl">{{ player.emoji }}</span>
-                <span>{{ player.name }}</span>
+                <span class="font-mono">{{ player.name }}</span>
                 <button
-                  class="bg-red-600 text-white px-4 py-2 rounded cursor-pointer"
-                  (click)="deletePlayer(player)"
+                  class="bg-primary text-white px-4 py-2 rounded cursor-pointer"
+                  (click)="goToPlayerGame(player)"
                 >
-                  Delete
+                  Spectate
                 </button>
                 <button
                   class="bg-red-600 text-white px-4 py-2 rounded cursor-pointer"
@@ -68,7 +68,11 @@ export class AdminPage {
     this.#router.navigate(['/']);
   }
 
-  goToPlayerGame() {}
+  goToPlayerGame(player: Player) {
+    this.#router.navigate(['/spectate'], {
+      queryParams: { playerId: player.id },
+    });
+  }
 
   deletePlayer(player: Player) {
     if (confirm(`Are you sure you want to delete ${player.name}?`)) {

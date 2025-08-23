@@ -5,25 +5,41 @@ import { firstValueFrom } from 'rxjs';
 import { SiteStatus } from '../errors';
 
 export const adminPasswordGuard: CanActivateFn = async () => {
-  const router = inject(Router);
   const http = inject(HttpClient);
+
+  const tryPassword = async (password: string): Promise<boolean> => {
+    try {
+      await firstValueFrom(
+        http.get('admin/players', {
+          headers: { Authorization: `Bearer ${password}` },
+        }),
+      );
+      return true;
+    } catch (e) {
+      return false;
+    }
+  };
+
   const passwordFromStorage = sessionStorage.getItem('adminPassword') ?? '';
+  const storageResult = await tryPassword(passwordFromStorage);
+  if (storageResult) {
+    return true;
+  }
+
   const password =
     prompt('Hi there! What is the password? 🔒', passwordFromStorage) ??
     passwordFromStorage;
-  try {
-    await firstValueFrom(
-      http.get('admin/players', {
-        headers: { Authorization: `Bearer ${password}` },
-      }),
-    );
+  const promptResult = await tryPassword(password);
+  if (promptResult) {
     sessionStorage.setItem('adminPassword', password);
     return true;
-  } catch (e) {
-    sessionStorage.removeItem('adminPassword');
-    alert('Wrong password! This incident will be reported.');
-    return router.createUrlTree(['/'], {
-      queryParams: { siteStatus: SiteStatus.WRONG_ADMIN_PASSWORD },
-    });
   }
+
+  sessionStorage.removeItem('adminPassword');
+  alert('Wrong password! This incident will be reported.');
+
+  const router = inject(Router);
+  return router.createUrlTree(['/'], {
+    queryParams: { siteStatus: SiteStatus.WRONG_ADMIN_PASSWORD },
+  });
 };
