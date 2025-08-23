@@ -21,6 +21,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/settings/latency": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Update the latency settings */
+        put: operations["updateLatencySettings"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/player": {
         parameters: {
             query?: never;
@@ -32,6 +49,40 @@ export interface paths {
         put?: never;
         /** Register a new player (or verify the registration of an existing player) */
         post: operations["registerPlayer"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/game/move/{playerId}/{ipAddress}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Move the player to the given IP address. */
+        post: operations["move"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/game/download/{playerId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Download data from the data source at the current location (if any) */
+        post: operations["download"];
         delete?: never;
         options?: never;
         head?: never;
@@ -199,6 +250,15 @@ export interface components {
         GameSettingsDTO: {
             /** Format: int32 */
             networkSize: number;
+            latencySettings: components["schemas"]["LatencySettingsDTO"];
+        };
+        LatencySettingsDTO: {
+            /** Format: int64 */
+            baseDelay: number;
+            /** Format: int64 */
+            maxAdditionalDelay: number;
+            /** Format: int32 */
+            latencyMultiplierForInvalidMoves: number;
         };
         PlayerRegistrationRequest: {
             name: string;
@@ -212,6 +272,26 @@ export interface components {
             id?: string;
             message?: string;
         };
+        DataSourceDTO: {
+            /** Format: int32 */
+            dataPoints: number;
+            /** Format: int32 */
+            blockSize: number;
+            /** Format: int64 */
+            latency: number;
+        };
+        GameStateDTO: {
+            /** @enum {string} */
+            state: "Waiting" | "Playing" | "Finished";
+            /** Format: uuid */
+            gameId?: string;
+            location?: string;
+            dataSources?: {
+                [key: string]: components["schemas"]["DataSourceDTO"];
+            };
+            /** Format: int32 */
+            points: number;
+        };
         EmptyBody: unknown;
         Player: {
             /** Format: uuid */
@@ -223,13 +303,6 @@ export interface components {
             emoji: string;
             description: string;
             aliases: string[];
-        };
-        GameStateDTO: {
-            /** @enum {string} */
-            state: "Waiting" | "Playing" | "Finished";
-            /** Format: uuid */
-            gameId?: string;
-            location?: string;
         };
         EdgeDTO: {
             from: string;
@@ -272,6 +345,30 @@ export interface operations {
             };
         };
     };
+    updateLatencySettings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LatencySettingsDTO"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["GameSettingsDTO"];
+                };
+            };
+        };
+    };
     registerPlayer: {
         parameters: {
             query?: never;
@@ -292,6 +389,51 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PlayerRegistrationResponse"];
+                };
+            };
+        };
+    };
+    move: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                playerId: string;
+                ipAddress: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["GameStateDTO"];
+                };
+            };
+        };
+    };
+    download: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                playerId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["GameStateDTO"];
                 };
             };
         };

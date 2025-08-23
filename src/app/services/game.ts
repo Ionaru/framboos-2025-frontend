@@ -24,6 +24,7 @@ export class GameService {
     const playerId = this.#playerService.playerId();
     return playerId ? `game/${playerId}` : undefined;
   });
+
   readonly #network = httpResource<
     paths['/game/network/{playerId}']['get']['responses'][200]['content']['*/*']
   >(() => {
