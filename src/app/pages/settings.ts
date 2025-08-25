@@ -12,8 +12,6 @@ import { Input } from '../components/input';
 import { Page } from '../components/page';
 import { AdminService, GameSettings, LatencySettings } from '../services/admin';
 
-
-
 type FormModel<T> = {
   [K in keyof T]: T[K] extends object
     ? FormGroup<FormModel<T[K]>>
@@ -24,10 +22,10 @@ type FormModel<T> = {
   template: `
     <app-page>
       <div class="p-4 flex flex-col items-center justify-center gap-4">
-        <h1 class="text-2xl font-bold">Settings</h1>
+        <h1 class="text-2xl">Settings</h1>
         <button app-button (click)="goBack()">Go back</button>
         <div class="flex flex-col items-center justify-center gap-4">
-          <h2 class="text-xl font-bold">Settings</h2>
+          <h2 class="text-xl">Settings</h2>
           @if (settings()) {
             <form
               [formGroup]="form"

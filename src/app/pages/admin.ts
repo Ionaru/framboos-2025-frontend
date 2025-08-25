@@ -3,13 +3,14 @@ import { Router } from '@angular/router';
 
 import { Button } from '../components/button';
 import { Page } from '../components/page';
-import { AdminService, Player } from '../services/admin';
+import { AdminService } from '../services/admin';
+import { Player } from '../services/player';
 
 @Component({
   template: `
     <app-page>
       <div class="p-4 flex flex-col items-center justify-center gap-4">
-        <h1 class="text-2xl font-bold">Admin page</h1>
+        <h1 class="text-2xl">Admin page</h1>
         <div class="flex items-center justify-center gap-4">
           <button app-button [style]="'dangerous'" (click)="deleteAllPlayers()">
             Delete all players
@@ -19,7 +20,7 @@ import { AdminService, Player } from '../services/admin';
           <button app-button (click)="logout()">Logout</button>
         </div>
         <div class="flex flex-col items-center justify-center gap-4 mt-4">
-          <h2 class="text-xl font-bold">Players</h2>
+          <h2 class="text-xl ">Players</h2>
           <ul class="grid grid-cols-4 gap-6">
             @for (player of players(); track player.id) {
               <li class="grid grid-cols-subgrid items-center col-span-full">

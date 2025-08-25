@@ -5,10 +5,11 @@ import { forkJoin, interval } from 'rxjs';
 
 import { components, paths } from '../api/schema';
 
-export type Player = components['schemas']['PlayerDTO'];
-export type Game = components['schemas']['GameStateDTO'];
+import { Player } from './player';
+
 export type GameSettings = components['schemas']['GameSettingsDTO'];
 export type LatencySettings = components['schemas']['LatencySettingsDTO'];
+export type GameStatistics = components['schemas']['GameStatisticsDTO'];
 
 const GAME_POLL_INTERVAL = 1000;
 

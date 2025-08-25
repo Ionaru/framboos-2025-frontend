@@ -22,7 +22,6 @@ import { AdminService } from '../services/admin';
 import { locationStyles, LocationType } from '../styles/nodes';
 import { GraphEdge, GraphNode } from '../utils/types';
 
-
 echarts.use([GraphChart, GridComponent, CanvasRenderer]);
 
 const LINE_MIN_WIDTH = 3;
@@ -37,7 +36,7 @@ const LINE_MAX_WIDTH = 10;
     <app-page class="flex flex-col items-center justify-center">
       @if (finalGame(); as game) {
         <div class="flex flex-col items-center justify-center">
-          <h1 class="text-4xl font-bold">Finale</h1>
+          <h1 class="text-4xl">Finale</h1>
         </div>
       }
 

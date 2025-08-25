@@ -37,10 +37,8 @@ import { SiteStatus } from '../errors';
         [gradientColorEnd]="'#6366f1'"
       >
         <div class="rounded p-8">
-          <h2 class="text-4xl font-bold text-center metal">
-            🍇 Vrolijke Framboos 2025
-          </h2>
-          <h1 class="text-8xl font-bold h-50 metal font-mono">
+          <h2 class="text-4xl text-center metal">🍇 Vrolijke Framboos 2025</h2>
+          <h1 class="text-8xl h-50 metal font-mono">
             🕸️ <om-cryptic-text [text]="titlePartOne()" />&nbsp;<om-cryptic-text
               [text]="titlePartTwo()"
             />

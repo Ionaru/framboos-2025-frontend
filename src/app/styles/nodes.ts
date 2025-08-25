@@ -7,22 +7,6 @@ export enum LocationType {
   TRAP,
 }
 
-export const getLocationType = (isOnLocation: boolean): LocationType => {
-  if (Math.random() > 0.99) {
-    return LocationType.DATA;
-  }
-
-  if (Math.random() > 0.99) {
-    return LocationType.TRAP;
-  }
-
-  if (isOnLocation) {
-    return LocationType.PLAYER;
-  }
-
-  return LocationType.NORMAL;
-};
-
 export const standardLocationStyle: GraphNodeStyle = {
   color: '#121212',
   shadowBlur: 15,
@@ -40,14 +24,14 @@ export const playerLocationStyle: GraphNodeStyle = {
 
 export const dataLocationStyle: GraphNodeStyle = {
   ...standardLocationStyle,
-  shadowColor: '#00FF00',
-  borderColor: '#00FF00',
+  shadowColor: '#00f000',
+  borderColor: '#69a4e5',
 };
 
 export const trapLocationStyle: GraphNodeStyle = {
   ...standardLocationStyle,
-  shadowColor: '#FF0000',
-  borderWidth: 1,
+  shadowColor: '#f00000',
+  borderColor: '#6366f1',
 };
 
 export const locationStyles = new Map<LocationType, GraphNodeStyle>([

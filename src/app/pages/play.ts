@@ -6,6 +6,7 @@ import {
   input,
   OnDestroy,
   signal,
+  untracked,
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { GraphChart } from 'echarts/charts';
@@ -18,9 +19,10 @@ import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
 import { Button } from '../components/button';
 import { LeaderboardComponent } from '../components/leaderboard';
 import { Page } from '../components/page';
+import { GameStatistics } from '../services/admin';
 import { GameService } from '../services/game';
 import { PlayerService } from '../services/player';
-import { getLocationType, locationStyles, LocationType } from '../styles/nodes';
+import { locationStyles, LocationType } from '../styles/nodes';
 import { GraphEdge, GraphNode } from '../utils/types';
 
 echarts.use([GraphChart, GridComponent, CanvasRenderer]);
@@ -78,6 +80,7 @@ export class PlayPage implements OnDestroy {
   readonly router = inject(Router);
 
   readonly playerId = input<string>();
+  readonly gameStatistics = input<GameStatistics>();
   readonly adminOverride = input(false);
 
   readonly chartOption = signal<EChartsOption | undefined>(undefined);
@@ -86,28 +89,37 @@ export class PlayPage implements OnDestroy {
   readonly nodes = computed(() => {
     const graph = this.gameService.network();
     const player = this.playerService.player();
-    if (!graph) {
+    const state = this.gameStatistics();
+    if (!graph || !player) {
       return [];
     }
     const nodePositions = this.nodePositions();
     const location = this.gameService.game()?.location;
     return graph.nodes.map<GraphNode>((node) => {
-      const isOnLocation = location === node;
-      const locationType = isOnLocation
-        ? getLocationType(isOnLocation)
-        : LocationType.NORMAL;
       const graphNode: GraphNode = {
         label: {
           show: true,
           formatter: '{b}',
         },
-        name: isOnLocation ? player?.emoji : '',
-        itemStyle: locationStyles.get(locationType),
+        itemStyle: locationStyles.get(LocationType.NORMAL),
         id: node,
         value: node,
         x: nodePositions.get(node)?.[0],
         y: nodePositions.get(node)?.[1],
       };
+
+      if (location === node) {
+        graphNode.itemStyle = locationStyles.get(LocationType.PLAYER);
+        graphNode.name = player.emoji;
+      }
+
+      if (state?.dataSources?.[node]) {
+        graphNode.itemStyle = locationStyles.get(LocationType.DATA);
+      }
+
+      if (state?.honeypots?.[node]) {
+        graphNode.itemStyle = locationStyles.get(LocationType.TRAP);
+      }
 
       return graphNode;
     });
@@ -119,24 +131,26 @@ export class PlayPage implements OnDestroy {
       return [];
     }
     const maxLatency = Math.max(...graph.edges.map((edge) => edge.latency));
-    return graph.edges.map<GraphEdge>((edge) => ({
-      source: edge.from,
-      target: edge.to,
-      lineStyle: {
-        color: '#69a4e5',
-        shadowBlur: 10,
-        shadowColor: 'black',
-        opacity: 0.4,
-        width: Math.max(
-          LINE_MIN_WIDTH,
-          Math.min(
-            LINE_MAX_WIDTH,
-            (edge.latency / maxLatency) * LINE_MAX_WIDTH,
+    return [
+      ...graph.edges.map<GraphEdge>((edge) => ({
+        source: edge.from,
+        target: edge.to,
+        lineStyle: {
+          color: '#69a4e5',
+          shadowBlur: 10,
+          shadowColor: 'black',
+          opacity: 0.4,
+          width: Math.max(
+            LINE_MIN_WIDTH,
+            Math.min(
+              LINE_MAX_WIDTH,
+              (edge.latency / maxLatency) * LINE_MAX_WIDTH,
+            ),
           ),
-        ),
-        curveness: 0.1,
-      },
-    }));
+          curveness: 0.1,
+        },
+      })),
+    ];
   });
 
   readonly ranking = computed(() => {
@@ -180,34 +194,33 @@ export class PlayPage implements OnDestroy {
       }
     });
 
-    const setInitialOptions = effect(() => {
-      const data = this.nodes();
+    effect(() => {
       const links = this.edges();
 
-      if (data.length === 0) {
-        return;
-      }
+      this.chartOption.set(undefined);
+      this.nodePositions.set(new Map());
 
-      this.chartOption.set({
-        series: [
-          {
-            animation: false,
-            name: 'Graph',
-            type: 'graph',
-            data,
-            links,
-            layout: 'force',
-            symbolSize: 25,
-            force: {
-              gravity: 0.4,
-              edgeLength: 1,
-              repulsion: 150,
-              layoutAnimation: false,
+      setTimeout(() => {
+        this.chartOption.set({
+          series: [
+            {
+              animation: false,
+              name: 'Graph',
+              type: 'graph',
+              data: untracked(this.nodes),
+              links,
+              layout: 'force',
+              symbolSize: 25,
+              force: {
+                gravity: 0.4,
+                edgeLength: 1,
+                repulsion: 150,
+                layoutAnimation: false,
+              },
             },
-          },
-        ],
-      });
-      setInitialOptions.destroy();
+          ],
+        });
+      }, 0);
     });
   }
 
