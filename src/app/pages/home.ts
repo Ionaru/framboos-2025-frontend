@@ -6,6 +6,8 @@ import { NgxNeonUnderlineComponent } from '@omnedia/ngx-neon-underline';
 import { NgxCrypticTextComponent } from '@omnedia/ngx-cryptic-text';
 import { SiteStatus } from '../errors';
 import { FormsModule } from '@angular/forms';
+import { Button } from '../components/button';
+import { Input } from '../components/input';
 
 @Component({
   imports: [
@@ -15,6 +17,8 @@ import { FormsModule } from '@angular/forms';
     NgxNeonUnderlineComponent,
     NgxCrypticTextComponent,
     FormsModule,
+    Button,
+    Input,
   ],
   template: `
     <app-page class="flex flex-col items-center justify-center">
@@ -28,11 +32,11 @@ import { FormsModule } from '@angular/forms';
       }
       <om-border-beam
         class=""
-        [gradientColorStart]="'#0ea5e9'"
+        [gradientColorStart]="'#69a4e5'"
         [gradientColorEnd]="'#6366f1'"
       >
         <div class="rounded p-8">
-          <h2 class="text-4xl font-bold text-center metal font-mono">
+          <h2 class="text-4xl font-bold text-center metal">
             🍇 Vrolijke Framboos 2025
           </h2>
           <h1 class="text-8xl font-bold h-50 metal font-mono">
@@ -44,14 +48,15 @@ import { FormsModule } from '@angular/forms';
           </h1>
           <div class="flex flex-col items-center justify-center gap-4 mt-8">
             <input
+              app-input
               type="text"
               placeholder="Enter your player ID"
-              class="bg-primary text-white px-4 py-2 rounded cursor-pointer text-center w-full"
+              class="w-full"
               [(ngModel)]="playerId"
             />
             <button
+              app-button
               [disabled]="!playerId()"
-              class="bg-primary text-white px-4 py-2 rounded cursor-pointer disabled:opacity-50"
               routerLink="/play"
               [queryParams]="{ playerId: playerId() }"
             >

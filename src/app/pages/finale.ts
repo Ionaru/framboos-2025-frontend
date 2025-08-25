@@ -3,8 +3,8 @@ import {
   computed,
   effect,
   inject,
-  input,
   OnDestroy,
+  OnInit,
   signal,
 } from '@angular/core';
 import { Page } from '../components/page';
@@ -18,29 +18,33 @@ import { CanvasRenderer } from 'echarts/renderers';
 
 import { LeaderboardComponent } from '../components/leaderboard';
 import { GraphEdge, GraphNode } from '../utils/types';
-import { getLocationType, locationStyles, LocationType } from '../styles/nodes';
-import { GameService } from '../services/game';
-import { PlayerService } from '../services/player';
+import { locationStyles, LocationType } from '../styles/nodes';
 import { Button } from '../components/button';
 import { Router } from '@angular/router';
+import { AdminService } from '../services/admin';
 echarts.use([GraphChart, GridComponent, CanvasRenderer]);
 
 const LINE_MIN_WIDTH = 3;
 const LINE_MAX_WIDTH = 10;
 
 @Component({
-  selector: 'app-play',
   imports: [Page, NgxEchartsDirective, LeaderboardComponent, Button],
   template: `
     <button
       id="play-logout"
       app-button
-      class="fixed bottom-3 right-3 z-10"
-      (click)="logout()"
+      class="fixed top-3 left-3 z-10"
+      (click)="toAdmin()"
     >
-      Logout
+      Admin Panel
     </button>
     <app-page class="flex flex-col items-center justify-center">
+      @if (finalGame(); as game) {
+        <div class="flex flex-col items-center justify-center">
+          <h1 class="text-4xl font-bold">Finale</h1>
+        </div>
+      }
+
       @if (chartOption(); as option) {
         <div
           style="width: 100vw; height: 100vw;"
@@ -71,44 +75,69 @@ const LINE_MAX_WIDTH = 10;
     }),
   ],
 })
-export class PlayPage implements OnDestroy {
-  readonly playerId = input<string>();
-  readonly adminOverride = input(false);
+export class FinalePage implements OnInit, OnDestroy {
+  readonly adminService = inject(AdminService);
+  readonly router = inject(Router);
+
+  readonly finalGame = computed(
+    () => this.adminService.games.value()?.finalGame,
+  );
+  readonly players = computed(
+    () => this.adminService.games.value()?.players ?? {},
+  );
 
   readonly nodePositions = signal<Map<string, [number, number]>>(new Map());
 
   readonly nodes = computed(() => {
-    const graph = this.gameService.network();
-    const player = this.playerService.player();
+    const graph = this.finalGame()?.network;
     if (!graph) {
       return [];
     }
     const nodePositions = this.nodePositions();
-    const location = this.gameService.game()?.location;
+
+    const playerLocations = Object.entries(this.finalGame()?.players ?? {});
+    const dataSources = Object.entries(this.finalGame()?.dataSources ?? {});
+    const honeypots = Object.entries(this.finalGame()?.honeypots ?? {});
+    const players = this.players();
+
     return graph.nodes.map<GraphNode>((node) => {
-      const isOnLocation = location === node;
-      const locationType = isOnLocation
-        ? getLocationType(isOnLocation)
-        : LocationType.NORMAL;
       const graphNode: GraphNode = {
         label: {
           show: true,
           formatter: '{b}',
         },
-        name: isOnLocation ? player?.emoji : '',
-        itemStyle: locationStyles.get(locationType),
+        itemStyle: locationStyles.get(LocationType.NORMAL),
         id: node,
         value: node,
         x: nodePositions.get(node)?.[0],
         y: nodePositions.get(node)?.[1],
       };
 
+      for (const [player, status] of playerLocations) {
+        if (status.location === node) {
+          graphNode.itemStyle = locationStyles.get(LocationType.PLAYER);
+          graphNode.name = players[player]?.emoji;
+        }
+      }
+
+      for (const [dataSource] of dataSources) {
+        if (dataSource === node) {
+          graphNode.itemStyle = locationStyles.get(LocationType.DATA);
+        }
+      }
+
+      for (const [honeypot] of honeypots) {
+        if (honeypot === node) {
+          graphNode.itemStyle = locationStyles.get(LocationType.TRAP);
+        }
+      }
+
       return graphNode;
     });
   });
 
   readonly edges = computed(() => {
-    const graph = this.gameService.network();
+    const graph = this.finalGame()?.network;
     if (!graph) {
       return [];
     }
@@ -133,19 +162,9 @@ export class PlayPage implements OnDestroy {
     }));
   });
 
-  readonly gameService = inject(GameService);
-  readonly playerService = inject(PlayerService);
   readonly chartOption = signal<EChartsOption | undefined>(undefined);
-  readonly router = inject(Router);
 
   constructor() {
-    effect(() => {
-      const playerId = this.playerId();
-      if (playerId) {
-        this.playerService.playerId.set(playerId);
-      }
-    });
-
     const setInitialOptions = effect(() => {
       const data = this.nodes();
       const links = this.edges();
@@ -196,7 +215,7 @@ export class PlayPage implements OnDestroy {
     const series = model.getSeriesByIndex(0);
     const nodeData = series.getData();
 
-    const nodes = this.gameService.network()?.nodes;
+    const nodes = this.finalGame()?.network?.nodes;
 
     const positions = new Map<string, any>();
     nodes?.forEach((node, index) => {
@@ -207,13 +226,15 @@ export class PlayPage implements OnDestroy {
     this.nodePositions.set(positions);
   }
 
-  ngOnDestroy() {
-    this.playerService.playerId.set(undefined);
+  toAdmin() {
+    this.router.navigate(['/admin']);
   }
 
-  logout() {
-    sessionStorage.removeItem('playerId');
-    sessionStorage.removeItem('playerPassword');
-    this.router.navigate(['/']);
+  ngOnInit() {
+    this.adminService.pollEnabled.set(true);
+  }
+
+  ngOnDestroy() {
+    this.adminService.pollEnabled.set(false);
   }
 }

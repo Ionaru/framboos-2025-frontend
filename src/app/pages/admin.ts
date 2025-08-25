@@ -1,28 +1,35 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { Page } from '../components/page';
 import { AdminService, Player } from '../services/admin';
 import { Router } from '@angular/router';
+import { Button } from '../components/button';
 
 @Component({
   template: `
     <app-page>
       <div class="p-4 flex flex-col items-center justify-center gap-4">
         <h1 class="text-2xl font-bold">Admin page</h1>
-        <div class="flex flex-col items-center justify-center gap-4">
+        <div class="flex items-center justify-center gap-4">
+          <button app-button [style]="'dangerous'" (click)="deleteAllPlayers()">
+            Delete all players
+          </button>
+          <button app-button (click)="goToSettings()">Settings</button>
+          <button app-button (click)="goHome()">Go home</button>
+          <button app-button (click)="logout()">Logout</button>
+        </div>
+        <div class="flex flex-col items-center justify-center gap-4 mt-4">
           <h2 class="text-xl font-bold">Players</h2>
           <ul>
             @for (player of players(); track player.id) {
               <li class="flex items-center gap-2 my-2">
                 <span class="text-2xl">{{ player.emoji }}</span>
                 <span class="font-mono">{{ player.name }}</span>
-                <button
-                  class="bg-primary text-white px-4 py-2 rounded cursor-pointer"
-                  (click)="goToPlayerGame(player)"
-                >
+                <button app-button (click)="goToPlayerGame(player)">
                   Spectate
                 </button>
                 <button
-                  class="bg-red-600 text-white px-4 py-2 rounded cursor-pointer"
+                  app-button
+                  [style]="'dangerous'"
                   (click)="deletePlayer(player)"
                 >
                   Delete
@@ -33,35 +40,20 @@ import { Router } from '@angular/router';
             }
           </ul>
         </div>
-        <button
-          class="bg-red-600 text-white px-4 py-2 rounded cursor-pointer"
-          (click)="deleteAllPlayers()"
-        >
-          Delete all players
-        </button>
-        <button
-          class="bg-primary text-white px-4 py-2 rounded cursor-pointer"
-          (click)="goHome()"
-        >
-          Go home
-        </button>
-        <button
-          class="bg-primary text-white px-4 py-2 rounded cursor-pointer"
-          (click)="logout()"
-        >
-          Logout
-        </button>
       </div>
     </app-page>
   `,
-  imports: [Page],
+  imports: [Page, Button],
 })
 export class AdminPage {
   readonly #router = inject(Router);
 
   readonly #adminService = inject(AdminService);
 
-  readonly players = this.#adminService.players.value;
+  // readonly players = this.#adminService.players.value;
+  readonly games = this.#adminService.games.value;
+
+  readonly players = computed(() => Object.values(this.games()?.players ?? {}));
 
   logout() {
     sessionStorage.removeItem('adminPassword');
@@ -88,5 +80,9 @@ export class AdminPage {
 
   goHome() {
     this.#router.navigate(['/']);
+  }
+
+  goToSettings() {
+    this.#router.navigate(['/settings']);
   }
 }

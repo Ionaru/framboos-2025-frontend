@@ -55,6 +55,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/game/reset/{playerId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Resets the current practice game for this player (if in practice mode) */
+        post: operations["reset"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/game/move/{playerId}/{ipAddress}": {
         parameters: {
             query?: never;
@@ -66,6 +83,23 @@ export interface paths {
         put?: never;
         /** Move the player to the given IP address. */
         post: operations["move"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/game/honeypot/{playerId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Place a honeypot to steal points from other players */
+        post: operations["placeHoneypot"];
         delete?: never;
         options?: never;
         head?: never;
@@ -99,14 +133,14 @@ export interface paths {
         get?: never;
         put?: never;
         /** Reset all the running games */
-        post: operations["reset"];
+        post: operations["reset_1"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/admin/final-game": {
+    "/admin/final-game/start": {
         parameters: {
             query?: never;
             header?: never;
@@ -117,6 +151,40 @@ export interface paths {
         put?: never;
         /** Start the FINAL GAME */
         post: operations["startFinalGame"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/final-game/prepare": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Prepare for the FINAL GAME */
+        post: operations["prepareForFinalGame"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/final-game/finish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Finish the FINAL GAME */
+        post: operations["finishFinalGame"];
         delete?: never;
         options?: never;
         head?: never;
@@ -304,14 +372,21 @@ export interface components {
             gameId?: string;
             location?: string;
             /** @enum {string} */
-            action?: "Idle" | "Moving" | "Downloading";
+            action?: "Idle" | "Move" | "Download" | "PlaceHoneypot";
             dataSources?: {
                 [key: string]: components["schemas"]["DataSourceDTO"];
             };
+            specialActions?: "PlaceHoneypot"[];
             /** Format: int32 */
             points: number;
         };
         EmptyBody: unknown;
+        PlayerScoreDTO: {
+            /** Format: uuid */
+            playerId: string;
+            /** Format: int32 */
+            score: number;
+        };
         PlayerDTO: {
             /** Format: uuid */
             id: string;
@@ -352,6 +427,9 @@ export interface components {
             dataSources: {
                 [key: string]: components["schemas"]["DataSourceDTO"];
             };
+            honeypots: {
+                [key: string]: components["schemas"]["HoneypotDTO"];
+            };
             ranking: components["schemas"]["PlayerScoreDTO"][];
             /** Format: date-time */
             createdAt: string;
@@ -360,16 +438,20 @@ export interface components {
             /** Format: date-time */
             lastUpdatedAt: string;
         };
-        PlayerScoreDTO: {
+        HoneypotDTO: {
             /** Format: uuid */
-            playerId: string;
+            id: string;
+            /** Format: uuid */
+            owner: string;
             /** Format: int32 */
-            score: number;
+            numberOfVictims: number;
+            /** Format: date-time */
+            validUntil: string;
         };
         PlayerStatisticsDTO: {
             location: string;
             /** @enum {string} */
-            action: "Idle" | "Moving" | "Downloading";
+            action: "Idle" | "Move" | "Download" | "PlaceHoneypot";
             /** Format: int32 */
             points: number;
             /** Format: date-time */
@@ -454,6 +536,26 @@ export interface operations {
             };
         };
     };
+    reset: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                playerId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     move: {
         parameters: {
             query?: never;
@@ -461,6 +563,28 @@ export interface operations {
             path: {
                 playerId: string;
                 ipAddress: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["GameStateDTO"];
+                };
+            };
+        };
+    };
+    placeHoneypot: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                playerId: string;
             };
             cookie?: never;
         };
@@ -499,7 +623,7 @@ export interface operations {
             };
         };
     };
-    reset: {
+    reset_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -534,6 +658,44 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    prepareForFinalGame: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    finishFinalGame: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PlayerScoreDTO"][];
+                };
             };
         };
     };

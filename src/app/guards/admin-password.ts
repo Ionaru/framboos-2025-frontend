@@ -6,6 +6,7 @@ import { SiteStatus } from '../errors';
 
 export const adminPasswordGuard: CanActivateFn = async () => {
   const http = inject(HttpClient);
+  const router = inject(Router);
 
   const tryPassword = async (password: string): Promise<boolean> => {
     try {
@@ -15,7 +16,7 @@ export const adminPasswordGuard: CanActivateFn = async () => {
         }),
       );
       return true;
-    } catch (e) {
+    } catch {
       return false;
     }
   };
@@ -38,7 +39,6 @@ export const adminPasswordGuard: CanActivateFn = async () => {
   sessionStorage.removeItem('adminPassword');
   alert('Wrong password! This incident will be reported.');
 
-  const router = inject(Router);
   return router.createUrlTree(['/'], {
     queryParams: { siteStatus: SiteStatus.WRONG_ADMIN_PASSWORD },
   });

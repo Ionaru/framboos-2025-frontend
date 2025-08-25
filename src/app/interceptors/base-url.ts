@@ -1,9 +1,11 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 
+const baseUrl = 'http://localhost:8080/raspberry-byte-brawl';
+
 export const baseUrlInterceptor: HttpInterceptorFn = (req, next) => {
-  if (!req.url.startsWith('http://localhost:8080/raspberry-byte-brawl/')) {
+  if (!req.url.startsWith(baseUrl)) {
     req = req.clone({
-      url: `http://localhost:8080/raspberry-byte-brawl/${req.url}`,
+      url: `${baseUrl}/${req.url}`,
     });
   }
   return next(req);

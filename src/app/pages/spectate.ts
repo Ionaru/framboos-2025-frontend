@@ -4,23 +4,30 @@ import { PlayPage } from './play';
 import { PlayerService } from '../services/player';
 import { AdminService } from '../services/admin';
 import { Router } from '@angular/router';
+import { Button } from '../components/button';
 
 @Component({
-  imports: [PlayPage],
+  imports: [PlayPage, Button],
   template: `
     @let p = player();
     @if (p) {
-      <p class="fixed top-0 left-1/2 -translate-x-1/2 text-2xl">
+      <p class="fixed top-3 left-1/2 -translate-x-1/2 text-2xl">
         Spectating {{ p.name }}
       </p>
-      <button class="fixed top-0 left-0 z-10" (click)="logout()">
+      <button app-button class="fixed top-3 left-3 z-10" (click)="logout()">
         Back to admin
       </button>
-      <button class="fixed top-0 right-0 z-10" (click)="next()">Next</button>
+      <button app-button class="fixed top-3 right-3 z-10" (click)="next()">
+        Next
+      </button>
     }
     <app-play [playerId]="playerId()" [adminOverride]="true" />
   `,
-  providers: [],
+  styles: `
+    app-play ::ng-deep #play-logout {
+      display: none;
+    }
+  `,
 })
 export class SpectatePage {
   readonly playerId = input.required<string>();

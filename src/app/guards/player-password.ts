@@ -26,7 +26,7 @@ export const playerPasswordGuard: CanActivateFn = async () => {
     sessionStorage.setItem('playerId', playerId);
     sessionStorage.setItem('playerPassword', password);
     return true;
-  } catch (e) {
+  } catch {
     sessionStorage.removeItem('playerPassword');
     alert('Unknown player ID or wrong password!');
     return router.createUrlTree(['/']);

@@ -2,14 +2,20 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #0ea5e9;
+  --color-primary: #69a4e5;
   --color-accent: #4338ca;
   --color-highlight: #22c55e;
   --color-base: #0f172a;
+
+  --font-mono: "Space Mono", monospace;
 }
 
 html {
   color-scheme: dark;
+  font-family: "Exo", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
 }
 
 .metal {

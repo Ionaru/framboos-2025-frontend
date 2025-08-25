@@ -8,7 +8,7 @@ import { PlayerService } from './player';
 export type Game = components['schemas']['GameStateDTO'];
 export type Network = components['schemas']['NetworkDTO'];
 
-const GAME_POLL_INTERVAL = 1000;
+const GAME_POLL_INTERVAL = 3000;
 
 @Injectable({
   providedIn: 'root',
