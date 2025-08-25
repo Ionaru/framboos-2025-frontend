@@ -7,21 +7,22 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
-import { Page } from '../components/page';
-
-import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
-import * as echarts from 'echarts/core';
-import { EChartsOption } from 'echarts/types/dist/shared';
+import { Router } from '@angular/router';
 import { GraphChart } from 'echarts/charts';
 import { GridComponent } from 'echarts/components';
+import * as echarts from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
+import { EChartsOption } from 'echarts/types/dist/shared';
+import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
 
-import { LeaderboardComponent } from '../components/leaderboard';
-import { GraphEdge, GraphNode } from '../utils/types';
-import { locationStyles, LocationType } from '../styles/nodes';
 import { Button } from '../components/button';
-import { Router } from '@angular/router';
+import { LeaderboardComponent } from '../components/leaderboard';
+import { Page } from '../components/page';
 import { AdminService } from '../services/admin';
+import { locationStyles, LocationType } from '../styles/nodes';
+import { GraphEdge, GraphNode } from '../utils/types';
+
+
 echarts.use([GraphChart, GridComponent, CanvasRenderer]);
 
 const LINE_MIN_WIDTH = 3;
@@ -30,12 +31,7 @@ const LINE_MAX_WIDTH = 10;
 @Component({
   imports: [Page, NgxEchartsDirective, LeaderboardComponent, Button],
   template: `
-    <button
-      id="play-logout"
-      app-button
-      class="fixed top-3 left-3 z-10"
-      (click)="toAdmin()"
-    >
+    <button app-button class="fixed top-3 left-3 z-10" (click)="toAdmin()">
       Admin Panel
     </button>
     <app-page class="flex flex-col items-center justify-center">
@@ -64,8 +60,9 @@ const LINE_MAX_WIDTH = 10;
       }
       <app-leaderboard
         class="absolute top-1/2 right-0 z-10 m-4 -translate-y-1/2"
-        [locations]="[]"
-        [nodes]="nodes()"
+        [ranking]="ranking()"
+        [players]="play()"
+        [stats]="stats()"
       />
     </app-page>
   `,
@@ -87,6 +84,7 @@ export class FinalePage implements OnInit, OnDestroy {
   );
 
   readonly nodePositions = signal<Map<string, [number, number]>>(new Map());
+  readonly chartOption = signal<EChartsOption | undefined>(undefined);
 
   readonly nodes = computed(() => {
     const graph = this.finalGame()?.network;
@@ -162,7 +160,29 @@ export class FinalePage implements OnInit, OnDestroy {
     }));
   });
 
-  readonly chartOption = signal<EChartsOption | undefined>(undefined);
+  readonly ranking = computed(() => {
+    const game = this.finalGame();
+    if (!game) {
+      return [];
+    }
+    return game.ranking;
+  });
+
+  readonly play = computed(() => {
+    const players = this.adminService.players.value();
+    if (!players) {
+      return [];
+    }
+    return players;
+  });
+
+  readonly stats = computed(() => {
+    const game = this.finalGame();
+    if (!game) {
+      return {};
+    }
+    return game.players;
+  });
 
   constructor() {
     const setInitialOptions = effect(() => {
@@ -217,9 +237,9 @@ export class FinalePage implements OnInit, OnDestroy {
 
     const nodes = this.finalGame()?.network?.nodes;
 
-    const positions = new Map<string, any>();
+    const positions = new Map<string, [number, number]>();
     nodes?.forEach((node, index) => {
-      const layout = nodeData.getItemLayout(index);
+      const layout = nodeData.getItemLayout(index) as [number, number];
       positions.set(node, layout);
     });
 

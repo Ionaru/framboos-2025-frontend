@@ -1,8 +1,9 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
+
+import { Button } from '../components/button';
 import { Page } from '../components/page';
 import { AdminService, Player } from '../services/admin';
-import { Router } from '@angular/router';
-import { Button } from '../components/button';
 
 @Component({
   template: `
@@ -19,15 +20,18 @@ import { Button } from '../components/button';
         </div>
         <div class="flex flex-col items-center justify-center gap-4 mt-4">
           <h2 class="text-xl font-bold">Players</h2>
-          <ul>
+          <ul class="grid grid-cols-4 gap-6">
             @for (player of players(); track player.id) {
-              <li class="flex items-center gap-2 my-2">
+              <li class="grid grid-cols-subgrid items-center col-span-full">
                 <span class="text-2xl">{{ player.emoji }}</span>
                 <span class="font-mono">{{ player.name }}</span>
-                <button app-button (click)="goToPlayerGame(player)">
-                  Spectate
-                </button>
+                @if (hasGame(player)) {
+                  <button app-button (click)="goToPlayerGame(player)">
+                    Spectate
+                  </button>
+                }
                 <button
+                  class="col-start-4"
                   app-button
                   [style]="'dangerous'"
                   (click)="deletePlayer(player)"
@@ -50,10 +54,9 @@ export class AdminPage {
 
   readonly #adminService = inject(AdminService);
 
-  // readonly players = this.#adminService.players.value;
   readonly games = this.#adminService.games.value;
 
-  readonly players = computed(() => Object.values(this.games()?.players ?? {}));
+  readonly players = this.#adminService.players.value;
 
   logout() {
     sessionStorage.removeItem('adminPassword');
@@ -84,5 +87,9 @@ export class AdminPage {
 
   goToSettings() {
     this.#router.navigate(['/settings']);
+  }
+
+  hasGame(player: Player) {
+    return Boolean(this.games()?.practiceGames[player.id]);
   }
 }

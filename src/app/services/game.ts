@@ -1,8 +1,11 @@
 import { httpResource } from '@angular/common/http';
 import { effect, inject, Injectable, untracked } from '@angular/core';
-import { paths, components } from '../api/schema';
-import { interval } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { interval } from 'rxjs';
+
+import { paths, components } from '../api/schema';
+
+
 import { PlayerService } from './player';
 
 export type Game = components['schemas']['GameStateDTO'];

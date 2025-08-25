@@ -1,15 +1,18 @@
 import { Component, effect, inject } from '@angular/core';
-import { Page } from '../components/page';
-import { AdminService, GameSettings, LatencySettings } from '../services/admin';
-import { Router } from '@angular/router';
-import { Button } from '../components/button';
 import {
   FormControl,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { Router } from '@angular/router';
+
+import { Button } from '../components/button';
 import { Input } from '../components/input';
+import { Page } from '../components/page';
+import { AdminService, GameSettings, LatencySettings } from '../services/admin';
+
+
 
 type FormModel<T> = {
   [K in keyof T]: T[K] extends object

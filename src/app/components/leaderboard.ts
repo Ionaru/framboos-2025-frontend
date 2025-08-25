@@ -1,22 +1,28 @@
 import { Component, computed, input } from '@angular/core';
-import { GraphSeriesOption } from 'echarts/charts';
 
-interface LeaderboardEntry {
-  name: string;
-  score: number;
+import { components } from '../api/schema';
+import { Player } from '../services/player';
+
+export type Ranking = components['schemas']['PlayerScoreDTO'][];
+export type Stats = Record<
+  string,
+  Partial<components['schemas']['PlayerStatisticsDTO']>
+>;
+
+interface RankingEntry {
+  emoji: string;
   location: string;
+  score: number;
 }
-
-type Unpacked<T> = T extends (infer U)[] ? U : T;
 
 @Component({
   selector: 'app-leaderboard',
   template: `
     <div class="grid gap-x-4 gap-y-1 grid-cols-[auto_10rem_auto]">
-      @for (entry of leaderboard(); track entry.name) {
+      @for (entry of rankingEntries(); track entry.emoji) {
         <div class="grid col-span-full grid-cols-subgrid items-center">
-          <span class="text-2xl font-bold">{{ entry.name }}</span>
-          <span class="text-lg font-mono">{{ entry.location }}</span>
+          <span class="text-2xl">{{ entry.emoji }}</span>
+          <span class="font-mono">{{ entry.location }}</span>
           <span class="text-lg">{{ entry.score }}</span>
         </div>
       }
@@ -24,34 +30,18 @@ type Unpacked<T> = T extends (infer U)[] ? U : T;
   `,
 })
 export class LeaderboardComponent {
-  readonly locations = input<any[]>();
-  readonly nodes = input<Unpacked<GraphSeriesOption['data']>[]>();
+  readonly ranking = input.required<Ranking>();
+  readonly players = input.required<Player[]>();
+  readonly stats = input.required<Stats>();
 
-  readonly leaderboard = computed(() => {
-    const locations = this.locations();
-    const nodes = this.nodes();
-    if (!locations || !nodes) {
-      return [];
-    }
-    const players = locations.flatMap((location) => location.players);
-    return players
-      .map((player) => {
-        const objectNodes = nodes.filter(
-          (node): node is { id: string; value: string } =>
-            Boolean(
-              node &&
-                typeof node === 'object' &&
-                'id' in node &&
-                'value' in node,
-            ),
-        );
-        const node = objectNodes.find(
-          (node) =>
-            node.id ===
-            locations.find((location) => location.players.includes(player))?.id,
-        );
-        return { name: player, score: 0, location: node?.value || 'NULL' };
-      })
-      .toSorted((a, b) => b.score - a.score);
+  readonly rankingEntries = computed<RankingEntry[]>(() => {
+    const ranking = this.ranking();
+    const players = this.players();
+    const stats = this.stats();
+    return ranking.map((entry) => ({
+      emoji: players.find((player) => player.id === entry.playerId)!.emoji,
+      location: stats[entry.playerId]?.location ?? '',
+      score: entry.score,
+    }));
   });
 }

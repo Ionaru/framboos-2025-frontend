@@ -1,12 +1,13 @@
 import { Routes } from '@angular/router';
-import { HomePage } from './pages/home';
-import { AdminPage } from './pages/admin';
+
 import { adminPasswordGuard } from './guards/admin-password';
-import { PlayPage } from './pages/play';
 import { playerPasswordGuard } from './guards/player-password';
-import { SpectatePage } from './pages/spectate';
+import { AdminPage } from './pages/admin';
 import { FinalePage } from './pages/finale';
+import { HomePage } from './pages/home';
+import { PlayPage } from './pages/play';
 import { SettingsPage } from './pages/settings';
+import { SpectatePage } from './pages/spectate';
 
 export const routes: Routes = [
   {

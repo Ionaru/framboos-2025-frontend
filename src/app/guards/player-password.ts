@@ -1,5 +1,5 @@
-import { inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 

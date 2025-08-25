@@ -1,8 +1,9 @@
-import { effect, inject, Injectable, signal } from '@angular/core';
 import { HttpClient, httpResource } from '@angular/common/http';
-import { components, paths } from '../api/schema';
+import { effect, inject, Injectable, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { forkJoin, interval } from 'rxjs';
+
+import { components, paths } from '../api/schema';
 
 export type Player = components['schemas']['PlayerDTO'];
 export type Game = components['schemas']['GameStateDTO'];

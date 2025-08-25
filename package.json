@@ -8,7 +8,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "format": "prettier --write .",
-    "generate": "openapi-typescript http://localhost:8080/raspberry-byte-brawl/v3/api-docs -o src/app/api/schema.d.ts"
+    "generate": "openapi-typescript http://localhost:8080/raspberry-byte-brawl/v3/api-docs -o src/app/api/schema.d.ts",
+    "lint": "ng lint"
   },
   "prettier": {
     "overrides": [
@@ -43,10 +44,15 @@
     "tslib": "^2.3.0"
   },
   "devDependencies": {
+    "@angular-eslint/builder": "20.2.0",
     "@angular/build": "^20.1.1",
     "@angular/cli": "^20.1.1",
     "@angular/compiler-cli": "^20.1.0",
+    "@eslint/js": "^9.33.0",
     "@types/jasmine": "~5.1.0",
+    "angular-eslint": "20.2.0",
+    "eslint": "^9.33.0",
+    "eslint-plugin-import": "^2.32.0",
     "jasmine-core": "~5.8.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
@@ -55,7 +61,8 @@
     "karma-jasmine-html-reporter": "~2.1.0",
     "openapi-typescript": "^7.9.1",
     "prettier": "^3.6.2",
-    "typescript": "~5.8.2"
+    "typescript": "~5.8.2",
+    "typescript-eslint": "8.40.0"
   },
   "packageManager": "pnpm@10.15.0+sha512.486ebc259d3e999a4e8691ce03b5cac4a71cbeca39372a9b762cb500cfdf0873e2cb16abe3d951b1ee2cf012503f027b98b6584e4df22524e0c7450d9ec7aa7b"
 }

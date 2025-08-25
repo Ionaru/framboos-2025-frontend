@@ -1,5 +1,6 @@
 import { httpResource } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
+
 import { paths, components } from '../api/schema';
 
 export type Player = components['schemas']['PlayerDTO'];

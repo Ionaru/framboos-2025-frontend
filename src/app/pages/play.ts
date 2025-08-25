@@ -7,22 +7,22 @@ import {
   OnDestroy,
   signal,
 } from '@angular/core';
-import { Page } from '../components/page';
-
-import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
-import * as echarts from 'echarts/core';
-import { EChartsOption } from 'echarts/types/dist/shared';
+import { Router } from '@angular/router';
 import { GraphChart } from 'echarts/charts';
 import { GridComponent } from 'echarts/components';
+import * as echarts from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
+import { EChartsOption } from 'echarts/types/dist/shared';
+import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
 
+import { Button } from '../components/button';
 import { LeaderboardComponent } from '../components/leaderboard';
-import { GraphEdge, GraphNode } from '../utils/types';
-import { getLocationType, locationStyles, LocationType } from '../styles/nodes';
+import { Page } from '../components/page';
 import { GameService } from '../services/game';
 import { PlayerService } from '../services/player';
-import { Button } from '../components/button';
-import { Router } from '@angular/router';
+import { getLocationType, locationStyles, LocationType } from '../styles/nodes';
+import { GraphEdge, GraphNode } from '../utils/types';
+
 echarts.use([GraphChart, GridComponent, CanvasRenderer]);
 
 const LINE_MIN_WIDTH = 3;
@@ -60,8 +60,9 @@ const LINE_MAX_WIDTH = 10;
       }
       <app-leaderboard
         class="absolute top-1/2 right-0 z-10 m-4 -translate-y-1/2"
-        [locations]="[]"
-        [nodes]="nodes()"
+        [ranking]="ranking()"
+        [players]="players()"
+        [stats]="stats()"
       />
     </app-page>
   `,
@@ -72,9 +73,14 @@ const LINE_MAX_WIDTH = 10;
   ],
 })
 export class PlayPage implements OnDestroy {
+  readonly gameService = inject(GameService);
+  readonly playerService = inject(PlayerService);
+  readonly router = inject(Router);
+
   readonly playerId = input<string>();
   readonly adminOverride = input(false);
 
+  readonly chartOption = signal<EChartsOption | undefined>(undefined);
   readonly nodePositions = signal<Map<string, [number, number]>>(new Map());
 
   readonly nodes = computed(() => {
@@ -133,10 +139,38 @@ export class PlayPage implements OnDestroy {
     }));
   });
 
-  readonly gameService = inject(GameService);
-  readonly playerService = inject(PlayerService);
-  readonly chartOption = signal<EChartsOption | undefined>(undefined);
-  readonly router = inject(Router);
+  readonly ranking = computed(() => {
+    const game = this.gameService.game();
+    const player = this.playerService.player();
+    if (!game || !player) {
+      return [];
+    }
+    return [{ playerId: player.id, score: game.points }];
+  });
+
+  readonly players = computed(() => {
+    const player = this.playerService.player();
+    if (!player) {
+      return [];
+    }
+    return [player];
+  });
+
+  readonly stats = computed(() => {
+    const game = this.gameService.game();
+    const player = this.playerService.player();
+    if (!game || !player) {
+      return {};
+    }
+    return {
+      [player.id]: {
+        location: game.location,
+        action: 'Move' as const,
+        points: game.points,
+        lastUpdated: new Date().toISOString(),
+      },
+    };
+  });
 
   constructor() {
     effect(() => {
@@ -198,9 +232,9 @@ export class PlayPage implements OnDestroy {
 
     const nodes = this.gameService.network()?.nodes;
 
-    const positions = new Map<string, any>();
+    const positions = new Map<string, [number, number]>();
     nodes?.forEach((node, index) => {
-      const layout = nodeData.getItemLayout(index);
+      const layout = nodeData.getItemLayout(index) as [number, number];
       positions.set(node, layout);
     });
 
