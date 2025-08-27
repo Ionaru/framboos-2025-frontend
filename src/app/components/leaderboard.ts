@@ -11,6 +11,7 @@ export type Stats = Record<
 
 interface RankingEntry {
   emoji: string;
+  name: string;
   location: string;
   score: number;
 }
@@ -18,12 +19,21 @@ interface RankingEntry {
 @Component({
   selector: 'app-leaderboard',
   template: `
-    <div class="grid gap-x-4 gap-y-1 grid-cols-[auto_10rem_auto]">
+    <div class="grid gap-x-4 gap-y-4 grid-cols-[auto_auto_auto]">
       @for (entry of rankingEntries(); track entry.emoji) {
-        <div class="grid col-span-full grid-cols-subgrid items-center">
-          <span class="text-2xl">{{ entry.emoji }}</span>
-          <span class="font-mono">{{ entry.location }}</span>
-          <span class="text-lg">{{ entry.score }}</span>
+        <div class="grid col-span-full grid-cols-subgrid grid-rows-[1fr_1fr]">
+          <span class="col-start-0 text-right">{{ entry.name }}</span>
+          <pre class="col-start-0 font-mono grayscale"
+            >{{ entry.location }} 📍</pre
+          >
+          <span class="text-2xl col-start-2 row-span-full self-center">{{
+            entry.emoji
+          }}</span>
+          <span
+            class="text-lg row-span-full col-start-3 self-center grayscale font-mono"
+          >
+            {{ entry.score }}
+          </span>
         </div>
       }
     </div>
@@ -39,8 +49,15 @@ export class LeaderboardComponent {
     const players = this.players();
     const stats = this.stats();
     return ranking.map((entry) => ({
-      emoji: players.find((player) => player.id === entry.playerId)!.emoji,
-      location: stats[entry.playerId]?.location ?? '',
+      emoji:
+        players.find((player) => player.id === entry.playerId)?.emoji ?? '🍇',
+      name:
+        players.find((player) => player.id === entry.playerId)?.name ??
+        'Unknown Player',
+      location: (stats[entry.playerId]?.location ?? 'localhost').padStart(
+        15,
+        ' ',
+      ),
       score: entry.score,
     }));
   });

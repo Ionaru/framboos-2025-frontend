@@ -10,8 +10,10 @@ import { Player } from './player';
 export type GameSettings = components['schemas']['GameSettingsDTO'];
 export type LatencySettings = components['schemas']['LatencySettingsDTO'];
 export type GameStatistics = components['schemas']['GameStatisticsDTO'];
+export type PlayerScore = components['schemas']['PlayerScoreDTO'];
 
-const GAME_POLL_INTERVAL = 1000;
+const GAME_POLL_INTERVAL = 100;
+const PLAYER_POLL_INTERVAL = 3000;
 
 @Injectable({
   providedIn: 'root',
@@ -19,8 +21,11 @@ const GAME_POLL_INTERVAL = 1000;
 export class AdminService {
   readonly #http = inject(HttpClient);
 
-  readonly pollEnabled = signal(false);
-  readonly poller = toSignal(interval(GAME_POLL_INTERVAL));
+  readonly gamePollerEnabled = signal(false);
+  readonly gamePoller = toSignal(interval(GAME_POLL_INTERVAL));
+
+  readonly playerPollerEnabled = signal(false);
+  readonly playerPoller = toSignal(interval(PLAYER_POLL_INTERVAL));
 
   readonly #players = httpResource<
     paths['/admin/players']['get']['responses'][200]['content']['application/json']
@@ -83,11 +88,54 @@ export class AdminService {
     });
   }
 
+  prepareFinalGame() {
+    this.#http
+      .post<
+        paths['/admin/final-game/prepare']['post']['responses'][200]['content']
+      >('admin/final-game/prepare', {})
+      .subscribe(() => {
+        this.#games.reload();
+      });
+  }
+
+  startFinalGame() {
+    this.#http
+      .post<
+        paths['/admin/final-game/start']['post']['responses'][200]['content']
+      >('admin/final-game/start', {})
+      .subscribe(() => {
+        this.#games.reload();
+      });
+  }
+
+  finishFinalGame() {
+    return this.#http.post<
+      paths['/admin/final-game/finish']['post']['responses'][200]['content']['*/*']
+    >('admin/final-game/finish', {});
+  }
+
+  resetAllGames() {
+    this.#http
+      .post<
+        paths['/admin/reset']['post']['responses'][200]['content']['*/*']
+      >('admin/reset', {})
+      .subscribe(() => {
+        this.#games.reload();
+      });
+  }
+
   constructor() {
     effect(() => {
-      this.poller();
-      if (this.pollEnabled()) {
+      this.gamePoller();
+      if (this.gamePollerEnabled()) {
         this.#games.reload();
+      }
+    });
+
+    effect(() => {
+      this.playerPoller();
+      if (this.playerPollerEnabled()) {
+        this.#players.reload();
       }
     });
   }

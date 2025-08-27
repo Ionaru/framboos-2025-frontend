@@ -18,8 +18,8 @@ export const standardLocationStyle: GraphNodeStyle = {
 
 export const playerLocationStyle: GraphNodeStyle = {
   ...standardLocationStyle,
-  borderColor: '#6366f1',
-  shadowBlur: 0,
+  borderColor: '#69a4e5',
+  // shadowBlur: 0,
 };
 
 export const dataLocationStyle: GraphNodeStyle = {

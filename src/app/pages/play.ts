@@ -35,15 +35,26 @@ const LINE_MAX_WIDTH = 10;
   imports: [Page, NgxEchartsDirective, LeaderboardComponent, Button],
   template: `
     <button
+      id="play-home"
+      app-button
+      class="fixed top-4 left-4 z-10"
+      (click)="goHome()"
+    >
+      Go home
+    </button>
+    <button
       id="play-logout"
       app-button
-      class="fixed bottom-3 right-3 z-10"
+      class="fixed top-4 right-4 z-10"
       (click)="logout()"
     >
       Logout
     </button>
     <app-page class="flex flex-col items-center justify-center">
-      @if (chartOption(); as option) {
+      @let gameState_ = gameState();
+      @if (gameState_ === 'Waiting') {
+        <h1 class="text-8xl my-4 text-center">💤</h1>
+      } @else if (chartOption(); as option) {
         <div
           style="width: 100vw; height: 100vw;"
           echarts
@@ -85,6 +96,14 @@ export class PlayPage implements OnDestroy {
 
   readonly chartOption = signal<EChartsOption | undefined>(undefined);
   readonly nodePositions = signal<Map<string, [number, number]>>(new Map());
+
+  readonly gameState = computed(() => {
+    const game = this.gameService.game();
+    if (!game) {
+      return 'Waiting';
+    }
+    return game.state;
+  });
 
   readonly nodes = computed(() => {
     const graph = this.gameService.network();
@@ -256,6 +275,10 @@ export class PlayPage implements OnDestroy {
 
   ngOnDestroy() {
     this.playerService.playerId.set(undefined);
+  }
+
+  goHome() {
+    this.router.navigate(['/']);
   }
 
   logout() {

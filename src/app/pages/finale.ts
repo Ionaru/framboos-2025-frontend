@@ -18,7 +18,8 @@ import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
 import { Button } from '../components/button';
 import { LeaderboardComponent } from '../components/leaderboard';
 import { Page } from '../components/page';
-import { AdminService } from '../services/admin';
+import { ScoreboardComponent } from '../components/scoreboard';
+import { AdminService, PlayerScore } from '../services/admin';
 import { locationStyles, LocationType } from '../styles/nodes';
 import { GraphEdge, GraphNode } from '../utils/types';
 
@@ -28,18 +29,53 @@ const LINE_MIN_WIDTH = 3;
 const LINE_MAX_WIDTH = 10;
 
 @Component({
-  imports: [Page, NgxEchartsDirective, LeaderboardComponent, Button],
+  imports: [
+    Page,
+    NgxEchartsDirective,
+    LeaderboardComponent,
+    Button,
+    ScoreboardComponent,
+  ],
   template: `
-    <button app-button class="fixed top-3 left-3 z-10" (click)="toAdmin()">
+    <button app-button class="fixed top-4 left-4 z-10" (click)="toAdmin()">
       Admin Panel
     </button>
-    <app-page class="flex flex-col items-center justify-center">
-      @if (finalGame(); as game) {
-        <div class="flex flex-col items-center justify-center">
-          <h1 class="text-4xl">Finale</h1>
+    @let scoreBoard_ = scoreBoard();
+    @if (finalGame(); as game) {
+      <button
+        app-button
+        [style]="'dangerous'"
+        class="fixed top-4 right-4 z-10"
+        (click)="finishFinalGame()"
+      >
+        Finish Final Game
+      </button>
+      <h1 class="text-4xl absolute top-4 left-1/2 -translate-x-1/2 z-10 metal">
+        🕸️ Final Game 🕸️
+      </h1>
+    } @else if (!scoreBoard_) {
+      <div
+        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10"
+      >
+        <h1 class="text-4xl my-4 text-center">Final Game inactive 💤</h1>
+        <div class="flex items-center justify-center gap-4">
+          <button app-button [style]="'dangerous'" (click)="prepareFinalGame()">
+            Prepare Final Game
+          </button>
+          <button app-button [style]="'dangerous'" (click)="startFinalGame()">
+            Start Final Game
+          </button>
         </div>
-      }
-
+      </div>
+    } @else {
+      <div
+        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10"
+      >
+        <h1 class="text-6xl my-4 text-center metal">Final Game Scores</h1>
+        <app-scoreboard [score]="scoreBoard_" [players]="players2()" />
+      </div>
+    }
+    <app-page class="flex flex-col items-center justify-center">
       @if (chartOption(); as option) {
         <div
           style="width: 100vw; height: 100vw;"
@@ -84,6 +120,7 @@ export class FinalePage implements OnInit, OnDestroy {
 
   readonly nodePositions = signal<Map<string, [number, number]>>(new Map());
   readonly chartOption = signal<EChartsOption | undefined>(undefined);
+  readonly scoreBoard = signal<PlayerScore[] | undefined>(undefined);
 
   readonly nodes = computed(() => {
     const graph = this.finalGame()?.network;
@@ -168,11 +205,11 @@ export class FinalePage implements OnInit, OnDestroy {
   });
 
   readonly play = computed(() => {
-    const players = this.adminService.players.value();
-    if (!players) {
-      return [];
-    }
-    return players;
+    return Object.values(this.players());
+  });
+
+  readonly players2 = computed(() => {
+    return this.adminService.players.value() ?? [];
   });
 
   readonly stats = computed(() => {
@@ -213,6 +250,11 @@ export class FinalePage implements OnInit, OnDestroy {
       });
       setInitialOptions.destroy();
     });
+
+    effect(() => {
+      const scoreBoard = this.scoreBoard();
+      this.adminService.gamePollerEnabled.set(!scoreBoard);
+    });
   }
 
   readonly chartInstance = signal<echarts.ECharts | undefined>(undefined);
@@ -250,10 +292,31 @@ export class FinalePage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.adminService.pollEnabled.set(true);
+    this.adminService.gamePollerEnabled.set(true);
   }
 
   ngOnDestroy() {
-    this.adminService.pollEnabled.set(false);
+    this.adminService.gamePollerEnabled.set(false);
+  }
+
+  prepareFinalGame() {
+    if (confirm('Are you sure you want to prepare the final game?')) {
+      this.adminService.prepareFinalGame();
+    }
+  }
+
+  startFinalGame() {
+    if (confirm('Are you sure you want to start the final game?')) {
+      this.adminService.startFinalGame();
+    }
+  }
+
+  finishFinalGame() {
+    if (confirm('Are you sure you want to finish the final game?')) {
+      this.adminService.finishFinalGame().subscribe((scores) => {
+        this.adminService.reloadPlayers();
+        this.scoreBoard.set(scores);
+      });
+    }
   }
 }

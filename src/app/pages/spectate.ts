@@ -22,10 +22,10 @@ import { PlayPage } from './play';
       <p class="fixed top-4 left-1/2 -translate-x-1/2 text-2xl">
         Spectating {{ p.name }}
       </p>
-      <button app-button class="fixed top-3 left-3 z-10" (click)="toAdmin()">
+      <button app-button class="fixed top-4 left-4 z-10" (click)="toAdmin()">
         Admin Panel
       </button>
-      <div class="fixed top-3 right-3 z-10 flex gap-3">
+      <div class="fixed top-4 right-4 z-10 flex gap-3">
         <button app-button (click)="next()">⏸️</button>
         <button app-button (click)="next()">Next</button>
       </div>
@@ -37,8 +37,11 @@ import { PlayPage } from './play';
     />
   `,
   styles: `
-    app-play ::ng-deep #play-logout {
-      display: none;
+    app-play {
+      ::ng-deep #play-logout,
+      ::ng-deep #play-home {
+        display: none;
+      }
     }
   `,
 })
@@ -73,6 +76,9 @@ export class SpectatePage implements OnDestroy {
     const nextPlayer = players[nextIndex];
     if (nextPlayer) {
       this.#playerService.playerId.set(nextPlayer.id);
+      this.#router.navigate(['/spectate'], {
+        queryParams: { playerId: nextPlayer.id },
+      });
     }
   }
 
@@ -80,14 +86,14 @@ export class SpectatePage implements OnDestroy {
     effect(() => {
       const player = this.player();
       if (player) {
-        this.#adminService.pollEnabled.set(true);
+        this.#adminService.gamePollerEnabled.set(true);
       } else {
-        this.#adminService.pollEnabled.set(false);
+        this.#adminService.gamePollerEnabled.set(false);
       }
     });
   }
 
   ngOnDestroy() {
-    this.#adminService.pollEnabled.set(false);
+    this.#adminService.gamePollerEnabled.set(false);
   }
 }
