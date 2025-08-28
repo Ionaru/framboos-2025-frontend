@@ -13,6 +13,7 @@ export type GameStatistics = components['schemas']['GameStatisticsDTO'];
 export type PlayerScore = components['schemas']['PlayerScoreDTO'];
 
 const GAME_POLL_INTERVAL = 100;
+const SLOW_GAME_POLL_INTERVAL = 3000;
 const PLAYER_POLL_INTERVAL = 3000;
 
 @Injectable({
@@ -23,6 +24,9 @@ export class AdminService {
 
   readonly gamePollerEnabled = signal(false);
   readonly gamePoller = toSignal(interval(GAME_POLL_INTERVAL));
+
+  readonly slowGamePollerEnabled = signal(false);
+  readonly slowGamePoller = toSignal(interval(SLOW_GAME_POLL_INTERVAL));
 
   readonly playerPollerEnabled = signal(false);
   readonly playerPoller = toSignal(interval(PLAYER_POLL_INTERVAL));
@@ -128,6 +132,13 @@ export class AdminService {
     effect(() => {
       this.gamePoller();
       if (this.gamePollerEnabled()) {
+        this.#games.reload();
+      }
+    });
+
+    effect(() => {
+      this.slowGamePoller();
+      if (this.slowGamePollerEnabled()) {
         this.#games.reload();
       }
     });

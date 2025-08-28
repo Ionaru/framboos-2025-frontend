@@ -56,6 +56,7 @@ const LINE_MAX_WIDTH = 10;
         <h1 class="text-8xl my-4 text-center">💤</h1>
       } @else if (chartOption(); as option) {
         <div
+          animate.enter="fade-in"
           style="width: 100vw; height: 100vw;"
           echarts
           (chartInit)="chartInit($event)"
@@ -100,7 +101,7 @@ export class PlayPage implements OnDestroy {
   readonly gameState = computed(() => {
     const game = this.gameService.game();
     if (!game) {
-      return 'Waiting';
+      return 'Loading';
     }
     return game.state;
   });

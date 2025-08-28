@@ -5,14 +5,21 @@ import {
   inject,
   input,
   OnDestroy,
+  OnInit,
+  signal,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
+import { Subscription, timer } from 'rxjs';
 
 import { Button } from '../components/button';
 import { AdminService } from '../services/admin';
 import { PlayerService } from '../services/player';
 
 import { PlayPage } from './play';
+
+const AUTO_NEXT_INTERVAL = 15000;
+const AUTO_NEXT_INTERVAL_SECONDS = Math.round(AUTO_NEXT_INTERVAL / 1000);
 
 @Component({
   imports: [PlayPage, Button],
@@ -26,7 +33,11 @@ import { PlayPage } from './play';
         Admin Panel
       </button>
       <div class="fixed top-4 right-4 z-10 flex gap-3">
-        <button app-button (click)="next()">⏸️</button>
+        @if (autoNextEnabled()) {
+          <button app-button (click)="autoNextEnabled.set(false)">Playing {{ timeLeft() -1 }}s</button>
+        } @else {
+          <button app-button (click)="autoNextEnabled.set(true)">Paused</button>
+        }
         <button app-button (click)="next()">Next</button>
       </div>
     }
@@ -45,12 +56,20 @@ import { PlayPage } from './play';
     }
   `,
 })
-export class SpectatePage implements OnDestroy {
+export class SpectatePage implements OnInit, OnDestroy {
   readonly playerId = input.required<string>();
 
   readonly #router = inject(Router);
   readonly #playerService = inject(PlayerService);
   readonly #adminService = inject(AdminService);
+
+  readonly #clock = timer(0, 1000);
+  readonly #clockSignal = toSignal(this.#clock);
+  readonly timeLeft = computed(() => {
+    return AUTO_NEXT_INTERVAL_SECONDS - (this.#clockSignal() ?? 0) % AUTO_NEXT_INTERVAL_SECONDS;
+  });
+  readonly autoNextEnabled = signal(true);
+  #autoNextSubscription?: Subscription;
 
   readonly player = this.#playerService.player;
 
@@ -67,17 +86,18 @@ export class SpectatePage implements OnDestroy {
     this.#router.navigate(['/admin']);
   }
 
-  async next() {
-    const currentPlayer = this.#playerService.player();
-    this.#adminService.reloadPlayers();
-    const players = this.#adminService.players.value() ?? [];
-    const currentIndex = players.findIndex((p) => p.id === currentPlayer?.id);
-    const nextIndex = (currentIndex + 1) % players.length;
-    const nextPlayer = players[nextIndex];
+  next() {
+    const currentGame = this.player()?.id;
+    const currentGames = this.#adminService.games.value()?.practiceGames ?? {};
+    const currentIndex = Object.keys(currentGames).findIndex(
+      (id) => id === currentGame,
+    );
+    const nextIndex = (currentIndex + 1) % Object.keys(currentGames).length;
+    const nextGame = Object.values(currentGames)[nextIndex];
+    const nextPlayer = Object.keys(nextGame?.players ?? {})[0];
     if (nextPlayer) {
-      this.#playerService.playerId.set(nextPlayer.id);
       this.#router.navigate(['/spectate'], {
-        queryParams: { playerId: nextPlayer.id },
+        queryParams: { playerId: nextPlayer },
       });
     }
   }
@@ -86,14 +106,23 @@ export class SpectatePage implements OnDestroy {
     effect(() => {
       const player = this.player();
       if (player) {
-        this.#adminService.gamePollerEnabled.set(true);
+        this.#adminService.slowGamePollerEnabled.set(true);
       } else {
-        this.#adminService.gamePollerEnabled.set(false);
+        this.#adminService.slowGamePollerEnabled.set(false);
+      }
+    });
+  }
+
+  ngOnInit() {
+    this.#autoNextSubscription = this.#clock.subscribe((value) => {
+      if ((value) % AUTO_NEXT_INTERVAL_SECONDS === 0 && this.autoNextEnabled()) {
+        this.next();
       }
     });
   }
 
   ngOnDestroy() {
-    this.#adminService.gamePollerEnabled.set(false);
+    this.#adminService.slowGamePollerEnabled.set(false);
+    this.#autoNextSubscription?.unsubscribe();
   }
 }

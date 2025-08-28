@@ -138,7 +138,6 @@ export class FinalePage implements OnInit, OnDestroy {
       const graphNode: GraphNode = {
         label: {
           show: true,
-          formatter: '{b}',
         },
         itemStyle: locationStyles.get(LocationType.NORMAL),
         id: node,
@@ -150,7 +149,7 @@ export class FinalePage implements OnInit, OnDestroy {
       for (const [player, status] of playerLocations) {
         if (status.location === node) {
           graphNode.itemStyle = locationStyles.get(LocationType.PLAYER);
-          graphNode.name = players[player]?.emoji;
+          graphNode.name = (graphNode.name ?? '') + players[player]?.emoji;
         }
       }
 

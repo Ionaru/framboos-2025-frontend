@@ -35,3 +35,16 @@ om-dotpattern svg {
 om-cryptic-text p {
   display: inline-block;
 }
+
+.fade-in {
+  animation: fade-in 0.5s linear;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
