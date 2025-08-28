@@ -55,6 +55,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/game/scan-network/{playerId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Scan the network to find all currently existing data sources */
+        post: operations["scanNetwork"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/game/reset/{playerId}": {
         parameters: {
             query?: never;
@@ -367,16 +384,16 @@ export interface components {
         };
         GameStateDTO: {
             /** @enum {string} */
-            state: "Waiting" | "Playing" | "Finished";
+            state: "Waiting" | "Playing";
             /** Format: uuid */
             gameId?: string;
             location?: string;
             /** @enum {string} */
-            action?: "Idle" | "Move" | "Download" | "PlaceHoneypot";
+            action?: "Idle" | "Move" | "Download" | "ScanNetwork" | "PlaceHoneypot";
             dataSources?: {
                 [key: string]: components["schemas"]["DataSourceDTO"];
             };
-            specialActions?: "PlaceHoneypot"[];
+            specialActions?: ("ScanNetwork" | "PlaceHoneypot")[];
             /** Format: int32 */
             points: number;
         };
@@ -451,7 +468,7 @@ export interface components {
         PlayerStatisticsDTO: {
             location: string;
             /** @enum {string} */
-            action: "Idle" | "Move" | "Download" | "PlaceHoneypot";
+            action: "Idle" | "Move" | "Download" | "ScanNetwork" | "PlaceHoneypot";
             /** Format: int32 */
             points: number;
             /** Format: date-time */
@@ -532,6 +549,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PlayerRegistrationResponse"];
+                };
+            };
+        };
+    };
+    scanNetwork: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                playerId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["GameStateDTO"];
                 };
             };
         };
