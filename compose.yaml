@@ -1,0 +1,9 @@
+services:
+  client:
+    image: ghcr.io/ionaru/framboos-2025-frontend:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 4200:80
+    restart: unless-stopped
