@@ -1,6 +1,6 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 
-const baseUrl = 'http://localhost:8080/raspberry-byte-brawl';
+const baseUrl = 'http://Riccardo:8080/raspberry-byte-brawl';
 
 export const baseUrlInterceptor: HttpInterceptorFn = (req, next) => {
   if (!req.url.startsWith(baseUrl)) {

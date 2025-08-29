@@ -1,7 +1,7 @@
 import { HttpClient, httpResource } from '@angular/common/http';
 import { effect, inject, Injectable, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { forkJoin, interval } from 'rxjs';
+import { forkJoin, interval, tap } from 'rxjs';
 
 import { components, paths } from '../api/schema';
 
@@ -115,7 +115,11 @@ export class AdminService {
   finishFinalGame() {
     return this.#http.post<
       paths['/admin/final-game/finish']['post']['responses'][200]['content']['*/*']
-    >('admin/final-game/finish', {});
+    >('admin/final-game/finish', {}).pipe(
+      tap(() => {
+        this.#games.reload()
+      })
+    );
   }
 
   resetAllGames() {

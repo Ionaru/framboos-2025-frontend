@@ -254,6 +254,11 @@ export class FinalePage implements OnInit, OnDestroy {
       const scoreBoard = this.scoreBoard();
       this.adminService.gamePollerEnabled.set(!scoreBoard);
     });
+
+    effect(() => {
+      const game = this.finalGame();
+      this.adminService.gamePollerEnabled.set(Boolean(game));
+    });
   }
 
   readonly chartInstance = signal<echarts.ECharts | undefined>(undefined);
@@ -314,7 +319,7 @@ export class FinalePage implements OnInit, OnDestroy {
     if (confirm('Are you sure you want to finish the final game?')) {
       this.adminService.finishFinalGame().subscribe((scores) => {
         this.adminService.reloadPlayers();
-        this.scoreBoard.set(scores);
+        this.scoreBoard.set([...scores]);
       });
     }
   }
