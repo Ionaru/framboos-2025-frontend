@@ -10,7 +10,12 @@ import { Router } from '@angular/router';
 import { Button } from '../components/button';
 import { Input } from '../components/input';
 import { Page } from '../components/page';
-import { AdminService, GameSettings, LatencySettings } from '../services/admin';
+import {
+  AdminService,
+  DataSourceSettings,
+  GameSettings,
+  LatencySettings,
+} from '../services/admin';
 
 type FormModel<T> = {
   [K in keyof T]: T[K] extends object
@@ -20,7 +25,7 @@ type FormModel<T> = {
 
 @Component({
   template: `
-    <app-page>
+    <app-page class="overflow-y-auto">
       <div class="p-4 flex flex-col items-center justify-center gap-4">
         <h1 class="text-2xl">Settings</h1>
         <button app-button (click)="goBack()">Go back</button>
@@ -97,6 +102,93 @@ type FormModel<T> = {
                     "
                   />
                 </li>
+                <li
+                  class="flex flex-col items-center justify-center gap-2"
+                  formGroupName="dataSourceSettings"
+                >
+                  <label for="dataSourcesMin">Data sources min</label>
+                  <input
+                    app-input
+                    class="w-full"
+                    type="number"
+                    id="dataSourcesMin"
+                    formControlName="dataSourcesMin"
+                    [invalid]="
+                      form.get('dataSourceSettings.dataSourcesMin')?.invalid ??
+                      false
+                    "
+                  />
+                </li>
+                <li
+                  class="flex flex-col items-center justify-center gap-2"
+                  formGroupName="dataSourceSettings"
+                >
+                  <label for="dataSourcesMax">Data sources max</label>
+                  <input
+                    app-input
+                    class="w-full"
+                    type="number"
+                    id="dataSourcesMax"
+                    formControlName="dataSourcesMax"
+                    [invalid]="
+                      form.get('dataSourceSettings.dataSourcesMax')?.invalid ??
+                      false
+                    "
+                  />
+                </li>
+                <li
+                  class="flex flex-col items-center justify-center gap-2"
+                  formGroupName="dataSourceSettings"
+                >
+                  <label for="dataSourceSpawnChance"
+                    >Data source spawn chance</label
+                  >
+                  <input
+                    app-input
+                    class="w-full"
+                    type="number"
+                    id="dataSourceSpawnChance"
+                    formControlName="dataSourceSpawnChance"
+                    [invalid]="
+                      form.get('dataSourceSettings.dataSourceSpawnChance')
+                        ?.invalid ?? false
+                    "
+                  />
+                </li>
+                <li
+                  class="flex flex-col items-center justify-center gap-2"
+                  formGroupName="dataSourceSettings"
+                >
+                  <label for="dataPointsMin">Data points min</label>
+                  <input
+                    app-input
+                    class="w-full"
+                    type="number"
+                    id="dataPointsMin"
+                    formControlName="dataPointsMin"
+                    [invalid]="
+                      form.get('dataSourceSettings.dataPointsMin')?.invalid ??
+                      false
+                    "
+                  />
+                </li>
+                <li
+                  class="flex flex-col items-center justify-center gap-2"
+                  formGroupName="dataSourceSettings"
+                >
+                  <label for="dataPointsMax">Data points max</label>
+                  <input
+                    app-input
+                    class="w-full"
+                    type="number"
+                    id="dataPointsMax"
+                    formControlName="dataPointsMax"
+                    [invalid]="
+                      form.get('dataSourceSettings.dataPointsMax')?.invalid ??
+                      false
+                    "
+                  />
+                </li>
               </ul>
               <button
                 app-button
@@ -138,6 +230,28 @@ export class SettingsPage {
       ),
       latencyMultiplierForInvalidMoves: new FormControl(
         this.settings()?.latencySettings?.latencyMultiplierForInvalidMoves ?? 0,
+        [Validators.required],
+      ),
+    }),
+    dataSourceSettings: new FormGroup<FormModel<DataSourceSettings>>({
+      dataSourcesMin: new FormControl(
+        this.settings()?.dataSourceSettings?.dataSourcesMin ?? 0,
+        [Validators.required],
+      ),
+      dataSourcesMax: new FormControl(
+        this.settings()?.dataSourceSettings?.dataSourcesMax ?? 0,
+        [Validators.required],
+      ),
+      dataSourceSpawnChance: new FormControl(
+        this.settings()?.dataSourceSettings?.dataSourceSpawnChance ?? 0,
+        [Validators.required],
+      ),
+      dataPointsMin: new FormControl(
+        this.settings()?.dataSourceSettings?.dataPointsMin ?? 0,
+        [Validators.required],
+      ),
+      dataPointsMax: new FormControl(
+        this.settings()?.dataSourceSettings?.dataPointsMax ?? 0,
         [Validators.required],
       ),
     }),

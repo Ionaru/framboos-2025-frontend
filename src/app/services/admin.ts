@@ -9,6 +9,7 @@ import { Player } from './player';
 
 export type GameSettings = components['schemas']['GameSettingsDTO'];
 export type LatencySettings = components['schemas']['LatencySettingsDTO'];
+export type DataSourceSettings = components['schemas']['DataSourceSettingsDTO'];
 export type GameStatistics = components['schemas']['GameStatisticsDTO'];
 export type PlayerScore = components['schemas']['PlayerScoreDTO'];
 
@@ -83,10 +84,17 @@ export class AdminService {
     >(`admin/settings/latency`, latencySettings);
   }
 
+  updateDataSourceSettings(dataSourceSettings: Partial<DataSourceSettings>) {
+    return this.#http.put<
+      paths['/admin/settings/data-source']['put']['responses'][200]['content']['*/*']
+    >(`admin/settings/data-source`, dataSourceSettings);
+  }
+
   updateSettings(settings: Partial<GameSettings>) {
     forkJoin([
       this.updateNetworkSize(settings.networkSize ?? 0),
       this.updateLatencySettings(settings.latencySettings ?? {}),
+      this.updateDataSourceSettings(settings.dataSourceSettings ?? {}),
     ]).subscribe(() => {
       this.#settings.reload();
     });
@@ -113,13 +121,15 @@ export class AdminService {
   }
 
   finishFinalGame() {
-    return this.#http.post<
-      paths['/admin/final-game/finish']['post']['responses'][200]['content']['*/*']
-    >('admin/final-game/finish', {}).pipe(
-      tap(() => {
-        this.#games.reload()
-      })
-    );
+    return this.#http
+      .post<
+        paths['/admin/final-game/finish']['post']['responses'][200]['content']['*/*']
+      >('admin/final-game/finish', {})
+      .pipe(
+        tap(() => {
+          this.#games.reload();
+        }),
+      );
   }
 
   resetAllGames() {

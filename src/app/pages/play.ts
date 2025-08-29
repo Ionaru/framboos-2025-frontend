@@ -109,6 +109,7 @@ export class PlayPage implements OnDestroy {
   readonly nodes = computed(() => {
     const graph = this.gameService.network();
     const player = this.playerService.player();
+    const game = this.gameService.game();
     const state = this.gameStatistics();
     if (!graph || !player) {
       return [];
@@ -133,11 +134,11 @@ export class PlayPage implements OnDestroy {
         graphNode.name = player.emoji;
       }
 
-      if (state?.dataSources?.[node]) {
+      if (state?.dataSources?.[node] || game?.dataSources?.[node]) {
         graphNode.itemStyle = locationStyles.get(LocationType.DATA);
       }
 
-      if (state?.honeypots?.[node]) {
+      if (state?.honeypots?.[node] || game?.placedHoneypot === node) {
         graphNode.itemStyle = locationStyles.get(LocationType.TRAP);
       }
 

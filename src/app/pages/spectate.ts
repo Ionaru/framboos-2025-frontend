@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
-import { Subscription, timer } from 'rxjs';
+import { interval, Subscription } from 'rxjs';
 
 import { Button } from '../components/button';
 import { AdminService } from '../services/admin';
@@ -34,7 +34,9 @@ const AUTO_NEXT_INTERVAL_SECONDS = Math.round(AUTO_NEXT_INTERVAL / 1000);
       </button>
       <div class="fixed top-4 right-4 z-10 flex gap-3">
         @if (autoNextEnabled()) {
-          <button app-button (click)="autoNextEnabled.set(false)">Playing {{ timeLeft() -1 }}s</button>
+          <button app-button (click)="autoNextEnabled.set(false)">
+            Playing {{ timeLeft() - 1 }}s
+          </button>
         } @else {
           <button app-button (click)="autoNextEnabled.set(true)">Paused</button>
         }
@@ -63,24 +65,21 @@ export class SpectatePage implements OnInit, OnDestroy {
   readonly #playerService = inject(PlayerService);
   readonly #adminService = inject(AdminService);
 
-  readonly #clock = timer(0, 1000);
+  readonly #clock = interval(1000);
   readonly #clockSignal = toSignal(this.#clock);
-  readonly timeLeft = computed(() => {
-    return AUTO_NEXT_INTERVAL_SECONDS - (this.#clockSignal() ?? 0) % AUTO_NEXT_INTERVAL_SECONDS;
-  });
+  readonly timeLeft = computed(
+    () =>
+      AUTO_NEXT_INTERVAL_SECONDS -
+      ((this.#clockSignal() ?? 0) % AUTO_NEXT_INTERVAL_SECONDS),
+  );
   readonly autoNextEnabled = signal(true);
   #autoNextSubscription?: Subscription;
 
   readonly player = this.#playerService.player;
 
-  readonly gameStatistics = computed(() => {
-    const game =
-      this.#adminService.games.value()?.practiceGames[this.playerId()];
-    if (!game) {
-      return undefined;
-    }
-    return game;
-  });
+  readonly gameStatistics = computed(
+    () => this.#adminService.games.value()?.practiceGames[this.playerId()],
+  );
 
   toAdmin() {
     this.#router.navigate(['/admin']);
@@ -105,17 +104,17 @@ export class SpectatePage implements OnInit, OnDestroy {
   constructor() {
     effect(() => {
       const player = this.player();
-      if (player) {
-        this.#adminService.slowGamePollerEnabled.set(true);
-      } else {
-        this.#adminService.slowGamePollerEnabled.set(false);
-      }
+      this.#adminService.slowGamePollerEnabled.set(Boolean(player));
     });
   }
 
   ngOnInit() {
     this.#autoNextSubscription = this.#clock.subscribe((value) => {
-      if ((value) % AUTO_NEXT_INTERVAL_SECONDS === 0 && this.autoNextEnabled()) {
+      if (
+        value &&
+        value % AUTO_NEXT_INTERVAL_SECONDS === 0 &&
+        this.autoNextEnabled()
+      ) {
         this.next();
       }
     });

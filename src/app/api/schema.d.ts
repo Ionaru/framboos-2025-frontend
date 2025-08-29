@@ -38,6 +38,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/settings/data-source": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Update the data source settings */
+        put: operations["updateDataSourceSettings"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/player": {
         parameters: {
             query?: never;
@@ -349,10 +366,23 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        DataSourceSettingsDTO: {
+            /** Format: int32 */
+            dataSourcesMin: number;
+            /** Format: int32 */
+            dataSourcesMax: number;
+            /** Format: int32 */
+            dataSourceSpawnChance: number;
+            /** Format: int32 */
+            dataPointsMin: number;
+            /** Format: int32 */
+            dataPointsMax: number;
+        };
         GameSettingsDTO: {
             /** Format: int32 */
             networkSize: number;
             latencySettings: components["schemas"]["LatencySettingsDTO"];
+            dataSourceSettings: components["schemas"]["DataSourceSettingsDTO"];
         };
         LatencySettingsDTO: {
             /** Format: int64 */
@@ -393,6 +423,7 @@ export interface components {
             dataSources?: {
                 [key: string]: components["schemas"]["DataSourceDTO"];
             };
+            placedHoneypot?: string;
             specialActions?: ("ScanNetwork" | "PlaceHoneypot")[];
             /** Format: int32 */
             points: number;
@@ -515,6 +546,30 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["LatencySettingsDTO"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["GameSettingsDTO"];
+                };
+            };
+        };
+    };
+    updateDataSourceSettings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DataSourceSettingsDTO"];
             };
         };
         responses: {
