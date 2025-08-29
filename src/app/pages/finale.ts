@@ -187,7 +187,7 @@ export class FinalePage implements OnInit, OnDestroy {
           LINE_MIN_WIDTH,
           Math.min(
             LINE_MAX_WIDTH,
-            (edge.latency / maxLatency) * LINE_MAX_WIDTH,
+            ((maxLatency - edge.latency) / maxLatency) * LINE_MAX_WIDTH,
           ),
         ),
         curveness: 0.1,
